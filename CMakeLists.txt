@@ -1,14 +1,12 @@
 cmake_minimum_required( VERSION 3.18.4 )
 
-project( NoEucRT )
+project(NoEucRT)
 
-find_package( OpenGL REQUIRED )
+#add_subdirectory(dependencies/SFML-2.5.1)
 
-set( GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE )
-set( GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE )
-set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
+set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SFML-2.5.1/lib/cmake/SFML")
+set(SFML_STATIC_LIBRARIES TRUE)
+find_package(SFML 2.5 COMPONENTS graphics window REQUIRED)
 
-add_subdirectory( glfw-3.3.2 )
-
-add_executable( NoEucRT src/main.cpp)
-target_link_libraries( NoEucRT glfw )
+add_executable(NoEucRT src/main.cpp)
+target_link_libraries(NoEucRT sfml-graphics sfml-window)
