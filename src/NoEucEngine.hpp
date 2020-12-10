@@ -3,19 +3,21 @@
 #include <SFML/Graphics.hpp>
 
 #include "Renderer.hpp"
+#include "Scene.hpp"
 
 class NoEucEngine
 {
 public:
-	sf::RenderWindow window;
-	Renderer renderer;
-
 	NoEucEngine();
 	int run();
 
 private:
 	sf::Texture t;
 	sf::Sprite s;
+
+	Scene scene;
+	sf::RenderWindow window;
+	Renderer renderer;
 
 	void handleEvents();
 };
