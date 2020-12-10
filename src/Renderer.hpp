@@ -9,7 +9,7 @@ class Renderer
 public:
 	Renderer();
 	~Renderer();
-	void render(const Scene& s, sf::Texture& t);
+	void render(const Scene& scene, sf::Texture& texture);
 
 private:
 	sf::Uint8* pixels;
