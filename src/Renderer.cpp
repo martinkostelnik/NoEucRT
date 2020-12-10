@@ -22,8 +22,8 @@ void Renderer::render(const Scene& s, sf::Texture& t)
 		// FOR MODEL IN SCENE
 		//     GET INTERSECTION
 
-		pixels[i] = std::sin(i) * 255;	// RED		
-		pixels[i + 1] = std::cos(i) * 255;	// GREEN
+		pixels[i] = std::abs(std::sin(i)) * 255;	// RED		
+		pixels[i + 1] = std::abs(std::cos(i)) * 255;	// GREEN
 		pixels[i + 2] = 0;	// BLUE
 	}
 
