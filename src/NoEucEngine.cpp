@@ -1,9 +1,9 @@
 #include "NoEucEngine.hpp"
 
-NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean Ray Tracer", sf::Style::None), renderer(), t(), s(), scene()
+NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean Ray Tracer", sf::Style::None), renderer(), texture(), sprite(), scene()
 {
-	t.create(800, 600);
-	s.setTexture(t);
+	texture.create(800, 600);
+	sprite.setTexture(texture);
 }
 
 int NoEucEngine::run()
@@ -16,11 +16,11 @@ int NoEucEngine::run()
 		// Update
 
 		// Render image
-		renderer.render(scene, t);
+		renderer.render(scene, texture);
 
 		// Display image
 		window.clear();
-		window.draw(s);
+		window.draw(sprite);
 		window.display();
 	}
 

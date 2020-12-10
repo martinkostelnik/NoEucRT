@@ -12,8 +12,8 @@ public:
 	int run();
 
 private:
-	sf::Texture t;
-	sf::Sprite s;
+	sf::Texture texture;
+	sf::Sprite sprite;
 
 	Scene scene;
 	sf::RenderWindow window;
