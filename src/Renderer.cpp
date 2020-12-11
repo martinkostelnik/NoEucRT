@@ -1,4 +1,6 @@
 #include "Renderer.hpp"
+#include <iostream>
+
 
 Renderer::Renderer()
 {
@@ -14,20 +16,24 @@ Renderer::~Renderer()
 void Renderer::render(const Scene& scene, sf::Texture& texture)
 {
 	sf::Vector2u size = texture.getSize();
-	size_t n = (size_t)size.x * size.y * 4;
+	size_t position = 0;
 
-	for (size_t i = 0; i < n; i += 4)
+	for (size_t y = 0; y < size.y; y++)
 	{
-		// GENERATE RAY
-		
-		for (const auto& object : scene.objects)
+		for (size_t x = 0; x < size.x; x++)
 		{
-			// GET INTERSCTION
-		}
+			// GENERATE RAY
 
-		pixels[i] = std::abs(std::sin(i)) * 255;	// RED		
-		pixels[i + 1] = std::abs(std::cos(i)) * 255;	// GREEN
-		pixels[i + 2] = 0;	// BLUE
+			for (const auto& object : scene.objects)
+			{
+				// GET INTERSCTION
+			}
+
+			position = (y * size.x + x) * 4;
+			pixels[position] = std::abs(std::sin(position * 0.001)) * 255;	// RED
+			pixels[position + 1] = 255 - std::abs(std::sin(position * 0.001)) * 255;	// GREEN
+			pixels[position + 2] = 0;	// BLUE
+		}
 	}
 
 	texture.update(pixels);
