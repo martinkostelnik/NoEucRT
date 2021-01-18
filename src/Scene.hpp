@@ -8,8 +8,7 @@ class Scene
 {
 public:
 	Scene();
-	std::vector<float> objects;
 
-private:
+	std::vector<float> objects;
 	Camera mainCamera;
 };

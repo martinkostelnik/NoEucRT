@@ -13,4 +13,5 @@ public:
 
 private:
 	sf::Uint8* pixels;
+	float aspectRatio;
 };
