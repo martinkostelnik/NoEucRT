@@ -21,13 +21,16 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 	sf::Vector2u size = texture.getSize();
 	size_t position = 0;
 
+	// scale = tan(alpha/2 * pi/180)
+	float scale = tan(scene.mainCamera.fov * 0.5 * 3.14159265358979 / 180);
+
 	for (size_t y = 0; y < size.y; y++)
 	{
 		for (size_t x = 0; x < size.x; x++)
 		{
 			// Transform x, y from raster space to camera space
-			float tx = (2 * (x + 0.5) / (float)size.x - 1) * tan(scene.mainCamera.fov / 2 * 3.141592 / 180) * aspectRatio;
-			float ty = (1 - 2 * (y + 0.5) / (float)size.y) * tan(scene.mainCamera.fov / 2 * 3.141592 / 180);
+			float tx = (2 * (x + 0.5) / (float)size.x - 1) * scale * aspectRatio;
+			float ty = (1 - 2 * (y + 0.5) / (float)size.y) * scale;
 
 			Ray ray;
 
@@ -36,13 +39,12 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 
 			// Calculate ray direction and transform it using camera world transformation matrix
 			ray.direction = glm::vec4(tx, ty, -1, 0) * scene.mainCamera.toWorld;
-
-			// Normalize ray direction
 			ray.direction = glm::normalize(ray.direction);
 
 			// Intersections
 			for (const auto& object : scene.objects)
 			{
+				
 			}
 
 			// Shading
