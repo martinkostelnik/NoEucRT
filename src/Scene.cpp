@@ -12,7 +12,6 @@ Scene::Scene() : objects(), mainCamera()
 	testingSquare.indices = { 0, 1, 2, 0, 2, 3 };
 	objects.push_back(testingSquare);*/
 
-
 	Model testingCube;
 	testingCube.vertices = { {-100, -100, -100}, {0, -100, -100}, {0, 0, -100}, {-100, 0, -100},
 							 {-100, -100, -200}, {0, -100, -200}, {0, 0, -200}, {-100, 0, -200} };
