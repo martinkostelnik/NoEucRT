@@ -6,7 +6,12 @@
 Renderer::Renderer()
 {
 	pixels = new sf::Uint8[800 * 600 * 4];
-	*pixels = { 255 };
+
+	for (int i = 0; i < 800 * 600 * 4; i++)
+		pixels[i] = 0;
+
+	for (int i = 3; i < 800 * 600 * 4; i += 4)
+		pixels[i] = 255;
 
 	aspectRatio = 800 / (float)600;
 }
@@ -42,18 +47,37 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 			ray.direction = glm::normalize(ray.direction);
 
 			// Intersections
+			float distance = 0.0;
+			float minDistance = FLT_MAX;
+			size_t closestTriangleIndex = 0;
+
+
 			for (const auto& object : scene.objects)
 			{
-				
+				for (size_t i = 0; i < object.indices.size(); i += 3)
+				{
+					if (ray.intersectsTriangle(Triangle(object.vertices[object.indices[i]], object.vertices[object.indices[i + 1]], object.vertices[object.indices[i + 2]]), distance)) // distance is out parameter
+					{
+						if (distance < minDistance)
+						{
+							minDistance = distance;
+							closestTriangleIndex = i;
+						}
+						pixels[position] = 255;	// RED
+						pixels[position + 1] = 0;	// GREEN
+						pixels[position + 2] = 0;	// BLUE
+					}
+				}
 			}
 
 			// Shading
-			pixels[position] = std::abs(std::sin(position * 0.001)) * 255;	// RED
+			/*pixels[position] = std::abs(std::sin(position * 0.001)) * 255;	// RED
 			pixels[position + 1] = 255 - std::abs(std::sin(position * 0.001)) * 255;	// GREEN
-			pixels[position + 2] = 0;	// BLUE
+			pixels[position + 2] = 0;	// BLUE*/
 			position += 4;
 		}
 	}
 
 	texture.update(pixels);
+	std::cout << "Frame rendered\n";
 }

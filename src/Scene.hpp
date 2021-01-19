@@ -3,12 +3,13 @@
 #include <vector>
 
 #include "Camera.hpp"
+#include "Model.hpp"
 
 class Scene
 {
 public:
 	Scene();
 
-	std::vector<float> objects;
+	std::vector<Model> objects;
 	Camera mainCamera;
 };
