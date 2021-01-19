@@ -51,7 +51,6 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 			float minDistance = FLT_MAX;
 			size_t closestTriangleIndex = 0;
 
-
 			for (const auto& object : scene.objects)
 			{
 				for (size_t i = 0; i < object.indices.size(); i += 3)
@@ -63,6 +62,8 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 							minDistance = distance;
 							closestTriangleIndex = i;
 						}
+
+						// Shading
 						pixels[position] = 255;	// RED
 						pixels[position + 1] = 0;	// GREEN
 						pixels[position + 2] = 0;	// BLUE
@@ -70,14 +71,9 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 				}
 			}
 
-			// Shading
-			/*pixels[position] = std::abs(std::sin(position * 0.001)) * 255;	// RED
-			pixels[position + 1] = 255 - std::abs(std::sin(position * 0.001)) * 255;	// GREEN
-			pixels[position + 2] = 0;	// BLUE*/
 			position += 4;
 		}
 	}
 
 	texture.update(pixels);
-	std::cout << "Frame rendered\n";
 }
