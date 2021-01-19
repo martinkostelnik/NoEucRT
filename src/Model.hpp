@@ -9,5 +9,5 @@ public:
 	Model();
 
 	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> indices;
+	std::vector<size_t> indices;
 };
