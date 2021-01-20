@@ -8,6 +8,6 @@ class Model
 public:
 	Model();
 
-	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec4> vertices;
 	std::vector<size_t> indices;
 };
