@@ -1,4 +1,6 @@
 #include "NoEucEngine.hpp"
+#include <chrono>
+#include <iostream>
 
 NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean Ray Tracer", sf::Style::None), renderer(), texture(), sprite(), scene()
 {
@@ -8,6 +10,9 @@ NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean 
 
 int NoEucEngine::run()
 {
+	auto start = std::chrono::high_resolution_clock::now();
+	size_t frames = 0;
+
 	while (window.isOpen())
 	{
 		// Process events
@@ -22,7 +27,13 @@ int NoEucEngine::run()
 		window.clear();
 		window.draw(sprite);
 		window.display();
+
+		frames++;
 	}
+
+	auto stop = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+	std::cout << "Avg fps: " << (double)frames / duration.count() << "\n";
 
 	return 0;
 }

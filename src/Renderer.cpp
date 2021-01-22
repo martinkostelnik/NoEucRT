@@ -1,6 +1,4 @@
 #include "Renderer.hpp"
-#include <iostream>
-
 #include "Ray.hpp"
 
 Renderer::Renderer()
@@ -75,7 +73,5 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 			position += 4;
 		}
 	}
-
-	std::cout << "Frame rendered\n";
 	texture.update(pixels);
 }
