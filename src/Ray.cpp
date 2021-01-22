@@ -10,8 +10,8 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance)
 
     glm::vec3 direction3 = direction;
 
-    glm::vec3 edge1 = triangle.v2 - triangle.v1;
-    glm::vec3 edge2 = triangle.v3 - triangle.v1;
+    glm::vec3 edge1 = { triangle.v2.x - triangle.v1.x, triangle.v2.y - triangle.v1.y, triangle.v2.z - triangle.v1.z };
+    glm::vec3 edge2 = { triangle.v3.x - triangle.v1.x, triangle.v3.y - triangle.v1.y, triangle.v3.z - triangle.v1.z };
 
     glm::vec3 h = glm::cross(direction3, edge2);
     float a = glm::dot(edge1, h);
