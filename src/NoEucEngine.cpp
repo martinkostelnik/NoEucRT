@@ -10,6 +10,10 @@ NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean 
 
 int NoEucEngine::run()
 {
+	// Primitive assembly
+	for (auto& model : scene.objects)
+		model.assembleTriangles();
+
 	auto start = std::chrono::high_resolution_clock::now();
 	size_t frames = 0;
 
