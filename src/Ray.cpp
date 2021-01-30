@@ -4,7 +4,11 @@ Ray::Ray() : origin(0, 0, 0, 1), direction(0, 0, 0, 0)
 {
 }
 
-bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance)
+Ray::Ray(const glm::vec4 direction) : origin(0, 0, 0, 1), direction(direction)
+{
+}
+
+bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) const
 {
     const float EPSILON = 0.0000001;
 
