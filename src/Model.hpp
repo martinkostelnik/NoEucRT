@@ -15,6 +15,7 @@ public:
 
 	std::vector<glm::vec4> vertices;
 	std::vector<size_t> indices;
+	glm::mat4 toWorld;
 
 	std::vector<Triangle> triangles;
 };
