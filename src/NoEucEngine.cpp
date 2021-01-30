@@ -15,7 +15,7 @@ int NoEucEngine::run()
 	{
 		for (auto& vertex : model.vertices)
 		{
-			vertex *= model.toWorld;
+			vertex = model.toWorld * vertex;
 		}
 	}
 
