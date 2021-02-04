@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <chrono>
 
 #include "Renderer.hpp"
 #include "Scene.hpp"
@@ -14,11 +13,16 @@ public:
 
 private:
 	sf::Texture texture;
-	sf::Sprite sprite;
+	sf::Sprite renderedImage;
 
 	Scene scene;
 	sf::RenderWindow window;
 	Renderer renderer;
 
-	void handleEvents(std::chrono::steady_clock::time_point& prev);
+	sf::Clock movementClock;
+
+	sf::Font fpsFont;
+	sf::Text fpsText;
+
+	void handleEvents();
 };

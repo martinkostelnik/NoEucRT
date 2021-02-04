@@ -1,11 +1,17 @@
 #include "NoEucEngine.hpp"
 #include <iostream>
+#include <string>
 #include <glm/gtc/matrix_transform.hpp>
 
-NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean Ray Tracer", sf::Style::None), renderer(), texture(), sprite(), scene()
+NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean Ray Tracer", sf::Style::None), renderer(), texture(), renderedImage(), scene(), movementClock()
 {
 	texture.create(800, 600);
-	sprite.setTexture(texture);
+	renderedImage.setTexture(texture);
+
+	fpsFont.loadFromFile("arial.ttf");
+	fpsText.setFont(fpsFont);
+	fpsText.setCharacterSize(18);
+	fpsText.setFillColor(sf::Color::Red);
 }
 
 int NoEucEngine::run()
@@ -25,41 +31,31 @@ int NoEucEngine::run()
 		model.assembleTriangles();
 	}
 
-	auto start = std::chrono::high_resolution_clock::now();
-	auto prev = std::chrono::high_resolution_clock::now();
-	size_t frames = 0;
+	sf::Clock fpsClock;
+	sf::Clock movementClock;
 
 	while (window.isOpen())
 	{
 		// Process events
-		handleEvents(prev);
+		handleEvents();
+		fpsText.setString(std::to_string(1 / fpsClock.restart().asSeconds()));
 
 		// Render image
 		renderer.render(scene, texture);
 
 		// Display image
 		window.clear();
-		window.draw(sprite);
+		window.draw(renderedImage);
+		window.draw(fpsText);
 		window.display();
-
-		frames++;
 	}
-
-	auto stop = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
-	std::cout << "Avg fps: " << (double)frames / duration.count() << "\n";
 
 	return 0;
 }
 
-void NoEucEngine::handleEvents(std::chrono::steady_clock::time_point& prev)
+void NoEucEngine::handleEvents()
 {
-	auto now = std::chrono::high_resolution_clock::now();
-	auto timeEllapsed_us = std::chrono::duration_cast<std::chrono::microseconds>(now - prev);
-
-	prev = now;
-
-	float timeEllapsed_s = timeEllapsed_us.count() / 1e6;
+	sf::Time elapsedTime = movementClock.restart();
 
 	sf::Event event;
 	while (window.pollEvent(event))
@@ -77,27 +73,27 @@ void NoEucEngine::handleEvents(std::chrono::steady_clock::time_point& prev)
 			}
 			if (event.key.code == sf::Keyboard::W)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -timeEllapsed_s * scene.mainCamera.speed });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -elapsedTime.asSeconds() * scene.mainCamera.speed });
 			}
 			if (event.key.code == sf::Keyboard::A)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -timeEllapsed_s* scene.mainCamera.speed, 0, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
 			}
 			if (event.key.code == sf::Keyboard::S)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, timeEllapsed_s * scene.mainCamera.speed });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, elapsedTime.asSeconds() * scene.mainCamera.speed });
 			}
 			if (event.key.code == sf::Keyboard::D)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { timeEllapsed_s * scene.mainCamera.speed, 0, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
 			}
 			if (event.key.code == sf::Keyboard::Q)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -timeEllapsed_s * scene.mainCamera.speed, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
 			}
 			if (event.key.code == sf::Keyboard::E)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, timeEllapsed_s * scene.mainCamera.speed, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
 			}
 			break;
 		}
