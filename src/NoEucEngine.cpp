@@ -1,6 +1,7 @@
 #include "NoEucEngine.hpp"
 #include <chrono>
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 
 NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean Ray Tracer", sf::Style::None), renderer(), texture(), sprite(), scene()
 {
@@ -68,6 +69,22 @@ void NoEucEngine::handleEvents()
 			if (event.key.code == sf::Keyboard::Escape)
 			{
 				window.close();
+			}
+			if (event.key.code == sf::Keyboard::W)
+			{
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -1 });
+			}
+			if (event.key.code == sf::Keyboard::A)
+			{
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -1, 0, 0 });
+			}
+			if (event.key.code == sf::Keyboard::S)
+			{
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, 1 });
+			}
+			if (event.key.code == sf::Keyboard::D)
+			{
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 1, 0, 0 });
 			}
 			break;
 		}
