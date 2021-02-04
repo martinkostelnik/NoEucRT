@@ -12,6 +12,7 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) cons
 {
     const float EPSILON = 0.0000001;
 
+    glm::vec3 origin3 = origin;
     glm::vec3 direction3 = direction;
 
     glm::vec3 edge1 = { triangle.v2.x - triangle.v1.x, triangle.v2.y - triangle.v1.y, triangle.v2.z - triangle.v1.z };
@@ -32,8 +33,8 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) cons
 
     float f = 1.0 / a;
 
-    //glm::vec3 s = direction3 - glm::vec3(triangle.v1);
-    glm::vec3 s = { direction3.x - triangle.v1.x, direction3.y - triangle.v1.y, direction3.z - triangle.v1.z };
+    //glm::vec3 s = origin3 - glm::vec3(triangle.v1);
+    glm::vec3 s = { origin3.x - triangle.v1.x, origin3.y - triangle.v1.y, origin3.z - triangle.v1.z };
 
     //float u = f * glm::dot(s, h);
     float u = f * (s.x * h.x + s.y * h.y + s.z * h.z);
