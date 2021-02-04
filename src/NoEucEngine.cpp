@@ -72,19 +72,27 @@ void NoEucEngine::handleEvents()
 			}
 			if (event.key.code == sf::Keyboard::W)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -1 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -10 });
 			}
 			if (event.key.code == sf::Keyboard::A)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -1, 0, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -10, 0, 0 });
 			}
 			if (event.key.code == sf::Keyboard::S)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, 1 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, 10 });
 			}
 			if (event.key.code == sf::Keyboard::D)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 1, 0, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 10, 0, 0 });
+			}
+			if (event.key.code == sf::Keyboard::Q)
+			{
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -10, 0 });
+			}
+			if (event.key.code == sf::Keyboard::E)
+			{
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 10, 0 });
 			}
 			break;
 		}
