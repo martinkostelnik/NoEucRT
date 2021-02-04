@@ -55,9 +55,11 @@ int NoEucEngine::run()
 void NoEucEngine::handleEvents(std::chrono::steady_clock::time_point& prev)
 {
 	auto now = std::chrono::high_resolution_clock::now();
-	auto timeEllapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - prev);
+	auto timeEllapsed_us = std::chrono::duration_cast<std::chrono::microseconds>(now - prev);
 
-	float d = timeEllapsed_ms.count() / 75.0;
+	prev = now;
+
+	float timeEllapsed_s = timeEllapsed_us.count() / 1e6;
 
 	sf::Event event;
 	while (window.pollEvent(event))
@@ -75,30 +77,29 @@ void NoEucEngine::handleEvents(std::chrono::steady_clock::time_point& prev)
 			}
 			if (event.key.code == sf::Keyboard::W)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -d * scene.mainCamera.speed });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -timeEllapsed_s * scene.mainCamera.speed });
 			}
 			if (event.key.code == sf::Keyboard::A)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -d * scene.mainCamera.speed, 0, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -timeEllapsed_s* scene.mainCamera.speed, 0, 0 });
 			}
 			if (event.key.code == sf::Keyboard::S)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, d * scene.mainCamera.speed });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, timeEllapsed_s * scene.mainCamera.speed });
 			}
 			if (event.key.code == sf::Keyboard::D)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { d * scene.mainCamera.speed, 0, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { timeEllapsed_s * scene.mainCamera.speed, 0, 0 });
 			}
 			if (event.key.code == sf::Keyboard::Q)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -d * scene.mainCamera.speed, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -timeEllapsed_s * scene.mainCamera.speed, 0 });
 			}
 			if (event.key.code == sf::Keyboard::E)
 			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, d * scene.mainCamera.speed, 0 });
+				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, timeEllapsed_s * scene.mainCamera.speed, 0 });
 			}
 			break;
 		}
 	}
-	prev = now;
 }
