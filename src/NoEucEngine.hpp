@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <chrono>
 
 #include "Renderer.hpp"
 #include "Scene.hpp"
@@ -19,5 +20,5 @@ private:
 	sf::RenderWindow window;
 	Renderer renderer;
 
-	void handleEvents();
+	void handleEvents(std::chrono::steady_clock::time_point& prev);
 };
