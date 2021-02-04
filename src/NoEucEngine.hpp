@@ -25,4 +25,5 @@ private:
 	sf::Text fpsText;
 
 	void handleEvents();
+	void handleMovement();
 };

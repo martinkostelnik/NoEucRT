@@ -38,6 +38,7 @@ int NoEucEngine::run()
 	{
 		// Process events
 		handleEvents();
+		handleMovement();
 		fpsText.setString(std::to_string(1 / fpsClock.restart().asSeconds()));
 
 		// Render image
@@ -55,8 +56,6 @@ int NoEucEngine::run()
 
 void NoEucEngine::handleEvents()
 {
-	sf::Time elapsedTime = movementClock.restart();
-
 	sf::Event event;
 	while (window.pollEvent(event))
 	{
@@ -71,31 +70,37 @@ void NoEucEngine::handleEvents()
 			{
 				window.close();
 			}
-			if (event.key.code == sf::Keyboard::W)
-			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -elapsedTime.asSeconds() * scene.mainCamera.speed });
-			}
-			if (event.key.code == sf::Keyboard::A)
-			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
-			}
-			if (event.key.code == sf::Keyboard::S)
-			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, elapsedTime.asSeconds() * scene.mainCamera.speed });
-			}
-			if (event.key.code == sf::Keyboard::D)
-			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
-			}
-			if (event.key.code == sf::Keyboard::Q)
-			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
-			}
-			if (event.key.code == sf::Keyboard::E)
-			{
-				scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
-			}
 			break;
 		}
+	}
+}
+
+void NoEucEngine::handleMovement()
+{
+	sf::Time elapsedTime = movementClock.restart();
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -elapsedTime.asSeconds() * scene.mainCamera.speed });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, elapsedTime.asSeconds() * scene.mainCamera.speed });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
 	}
 }
