@@ -21,7 +21,6 @@ Renderer::~Renderer()
 void Renderer::render(const Scene& scene, sf::Texture& texture)
 {
 	sf::Vector2u size = texture.getSize();
-	size_t position = 0;
 
 	// scale = tan(alpha/2 * pi/180)
 	float scale = tan(scene.mainCamera.fov * 0.00872665);
@@ -34,6 +33,9 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 		#pragma omp parallel for
 		for (int x = 0; x < size.x; x++)
 		{
+			size_t position = ((y * size.x) + x) * 4;
+			bool hit = false;
+
 			Ray primaryRay({ (2 * (x + 0.5) / (float)size.x - 1) * scale * aspectRatio, (1 - 2 * (y + 0.5) / (float)size.y) * scale, -1, 0 });
 
 			// Transform ray origin using camera world transformation matrix
@@ -54,17 +56,26 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 				{
 					if (primaryRay.intersectsTriangle(triangle, distance)) // distance is out parameter
 					{
+						hit = true;
+
 						if (distance < minDistance)
 						{
 							minDistance = distance;
 
 							// Shading
-							pixels[((y * size.x) + x) * 4] = 255;	// RED
-							pixels[((y * size.x) + x + 1) * 4] = 0;	// GREEN
-							pixels[((y * size.x) + x + 2) * 4] = 0;	// BLUE
+							pixels[position] = 255;	// RED
+							pixels[position + 1] = 0; // GREEN
+							pixels[position + 2] = 0; // BLUE
 						}
 					}
 				}
+			}
+
+			if (!hit) // we hit nothing -- set black
+			{
+				pixels[position] = 0; // RED
+				pixels[position + 1] = 0; // GREEN
+				pixels[position + 2] = 0; // BLUE
 			}
 		}
 	}
