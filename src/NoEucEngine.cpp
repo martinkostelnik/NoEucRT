@@ -16,23 +16,20 @@ NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean 
 
 int NoEucEngine::run()
 {
-	// Transform objects
+	// Model preprocessing
 	for (auto& model : scene.objects)
 	{
+		// Transform every vertex to world space
 		for (auto& vertex : model.vertices)
 		{
 			vertex = model.toWorld * vertex;
 		}
-	}
 
-	// Primitive assembly
-	for (auto& model : scene.objects)
-	{
+		// Primitive assembly
 		model.assembleTriangles();
 	}
 
 	sf::Clock fpsClock;
-	sf::Clock movementClock;
 
 	while (window.isOpen())
 	{
