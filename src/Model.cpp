@@ -7,6 +7,11 @@ Model::Model() : toWorld(1.0f)
 {
 }
 
+Model::Model(const std::string fileName)
+{
+	loadFromFile(fileName);
+}
+
 void Model::assembleTriangles()
 {
 	triangles.reserve(indices.size() / 3);

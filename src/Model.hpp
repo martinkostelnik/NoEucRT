@@ -10,6 +10,8 @@ class Model
 {
 public:
 	Model();
+	Model(const std::string fileName);
+
 	void assembleTriangles();
 	void loadFromFile(std::string fileName);
 
