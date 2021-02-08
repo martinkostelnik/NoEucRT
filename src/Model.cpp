@@ -23,6 +23,37 @@ void Model::assembleTriangles()
 	}
 }
 
+void Model::constructBVH()
+{
+	for (const auto& vertex : vertices)
+	{
+		if (vertex.x < boundingBox.min.x)
+		{
+			boundingBox.min.x = vertex.x;
+		}
+		if (vertex.y < boundingBox.min.y)
+		{
+			boundingBox.min.y = vertex.y;
+		}
+		if (vertex.z < boundingBox.min.z)
+		{
+			boundingBox.min.z = vertex.z;
+		}
+		if (vertex.x > boundingBox.max.x)
+		{
+			boundingBox.max.x = vertex.x;
+		}
+		if (vertex.y > boundingBox.max.y)
+		{
+			boundingBox.max.y = vertex.y;
+		}
+		if (vertex.z > boundingBox.max.z)
+		{
+			boundingBox.max.z = vertex.z;
+		}
+	}
+}
+
 void Model::loadFromFile(std::string fileName)
 {
 	std::ifstream fileHandle;

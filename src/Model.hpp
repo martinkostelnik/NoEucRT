@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Triangle.hpp"
+#include "AABB.hpp"
 
 class Model
 {
@@ -20,4 +21,5 @@ public:
 	glm::mat4 toWorld;
 
 	std::vector<Triangle> triangles;
+	AABB boundingBox;
 };
