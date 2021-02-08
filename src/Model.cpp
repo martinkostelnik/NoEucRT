@@ -8,7 +8,7 @@ Model::Model() :
 {
 }
 
-Model::Model(const std::string fileName)
+Model::Model(const std::string fileName) : toWorld(1.0f)
 {
 	loadFromFile(fileName);
 }
