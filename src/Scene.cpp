@@ -21,6 +21,11 @@ Scene::Scene() :
 	testingCube.indices = {0, 1, 2, 0, 2, 3, 0, 4, 3, 3, 4, 7, 4, 5, 6, 4, 6, 7, 1, 2, 5, 2, 5, 6, 0, 1, 4, 1, 4, 5, 2, 3, 7, 2, 6, 7};
 	objects.push_back(testingCube);
 
+	Model floor;
+	floor.vertices = { {10000, -200, 10000, 1}, {10000, -200, -10000, 1}, {-10000, -200, -10000, 1}, {-10000, -200, 10000, 1}};
+	floor.indices = {0, 1, 2, 0, 2, 3};
+	objects.push_back(floor);
+
 	/*Model teapot("teapot.obj");
 	teapot.toWorld = glm::scale(teapot.toWorld, { 100, 100, 100 });
 	objects.push_back(teapot);*/
@@ -36,4 +41,8 @@ Scene::Scene() :
 	/*Model dragon("dragon.obj");
 	dragon.toWorld = glm::scale(dragon.toWorld, { 100, 100, 100 });
 	objects.push_back(dragon);*/
+
+	/*Model donut("donut.obj");
+	donut.toWorld = glm::scale(donut.toWorld, { 100, 100, 100 });
+	objects.push_back(donut);*/
 }
