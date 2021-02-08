@@ -35,6 +35,9 @@ int NoEucEngine::run()
 
 		// Primitive assembly
 		model.assembleTriangles();
+
+		// Construst BVH on model
+		model.constructBVH();
 	}
 
 	// Ray preprocessing, this function precomputes all ray directions in camera space.

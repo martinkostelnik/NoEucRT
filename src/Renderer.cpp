@@ -78,14 +78,15 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 					{
 						hit = true;
 
-						if (distance < minDistance)
-						{
-							minDistance = distance;
+							if (distance < minDistance)
+							{
+								minDistance = distance;
 
-							// Shading
-							pixels[position] = 255;	// RED
-							pixels[position + 1] = 0; // GREEN
-							pixels[position + 2] = 0; // BLUE
+								// Shading
+								pixels[position] = 255;	// RED
+								pixels[position + 1] = 0; // GREEN
+								pixels[position + 2] = 0; // BLUE
+							}
 						}
 					}
 				}
