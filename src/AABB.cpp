@@ -1,5 +1,5 @@
 #include "AABB.hpp"
 
-AABB::AABB() : min(0.0f), max(0.0f)
+AABB::AABB() : min(FLT_MAX), max(FLT_MIN)
 {
 }
