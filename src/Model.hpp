@@ -14,6 +14,7 @@ public:
 	Model(const std::string fileName);
 
 	void assembleTriangles();
+	void constructBVH();
 	void loadFromFile(std::string fileName);
 
 	std::vector<glm::vec4> vertices;

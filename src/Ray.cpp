@@ -1,4 +1,5 @@
 #include "Ray.hpp"
+#include <algorithm>
 
 Ray::Ray() :
     origin(0, 0, 0, 1),
@@ -73,4 +74,23 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) cons
     {
         return false;
     }
+}
+
+bool Ray::intersectsAABB(const AABB& aabb) const
+{
+    float tmin = FLT_MIN;
+    float tmax = FLT_MAX;
+
+    glm::vec3 invDir = { 1.0 / direction.x, 1.0 / direction.y, 1.0 / direction.z };
+
+    for (int i = 0; i < 3; i++)
+    {
+        float t1 = (aabb.min[i] - origin[i]) * invDir[i];
+        float t2 = (aabb.max[i] - origin[i]) * invDir[i];
+
+        tmin = std::max(tmin, std::min(t1, t2));
+        tmax = std::min(tmax, std::max(t1, t2));
+    }
+
+    return tmax > std::max(tmin, 0.0f);
 }
