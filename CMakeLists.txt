@@ -16,5 +16,6 @@ add_executable(NoEucRT src/main.cpp
 			   src/Scene.hpp src/Scene.cpp
 			   src/Ray.hpp src/Ray.cpp
 			   src/Model.hpp src/Model.cpp
-			   src/Triangle.hpp src/Triangle.cpp)
+			   src/Triangle.hpp src/Triangle.cpp
+			   src/AABB.hpp src/AABB.cpp)
 target_link_libraries(NoEucRT sfml-graphics sfml-window glm::glm)
