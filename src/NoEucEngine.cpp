@@ -3,9 +3,17 @@
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
 
-NoEucEngine::NoEucEngine() : window(sf::VideoMode(800, 600, 24), "Non-Euclidean Ray Tracer", sf::Style::None), renderer(), texture(), renderedImage(), scene(), movementClock()
+NoEucEngine::NoEucEngine() :
+	width(800),
+	height(600),
+	window(sf::VideoMode(width, height, 24), "Non-Euclidean Ray Tracer", sf::Style::None),
+	scene(),
+	renderer(width, height, scene.mainCamera.fov),
+	texture(),
+	renderedImage(),
+	movementClock()
 {
-	texture.create(800, 600);
+	texture.create(width, height);
 	renderedImage.setTexture(texture);
 
 	fpsFont.loadFromFile("arial.ttf");
@@ -31,7 +39,7 @@ int NoEucEngine::run()
 
 	// Ray preprocessing, this function precomputes all ray directions in camera space.
 	// Rays are then stored sequentially in a vector for simd support.
-	renderer.precomputeRays(scene.mainCamera.fov);
+	renderer.precomputeRays();
 
 	sf::Clock fpsClock;
 

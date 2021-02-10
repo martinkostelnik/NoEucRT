@@ -1,10 +1,14 @@
 #include "Ray.hpp"
 
-Ray::Ray() : origin(0, 0, 0, 1), direction(0, 0, 0, 0)
+Ray::Ray() :
+    origin(0, 0, 0, 1),
+    direction(0, 0, 0, 0)
 {
 }
 
-Ray::Ray(const glm::vec4 direction) : origin(0, 0, 0, 1), direction(direction)
+Ray::Ray(const glm::vec4& direction) :
+    origin(0, 0, 0, 1),
+    direction(direction)
 {
 }
 

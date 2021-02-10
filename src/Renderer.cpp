@@ -1,16 +1,18 @@
 #include "Renderer.hpp"
 #include "Ray.hpp"
 
-Renderer::Renderer()
+Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
+	width(width),
+	height(height),
+	aspectRatio(width / (float)height),
+	fov(fov)
 {
-	constexpr size_t len = 800 * 600 * 4;
+	const size_t len = width * height * 4;
 
 	pixels = new sf::Uint8[len] { 0 };
 
 	for (int i = 3; i < len; i += 4)
 		pixels[i] = 255;
-
-	aspectRatio = 800 / (float)600;
 }
 
 Renderer::~Renderer()
@@ -19,19 +21,19 @@ Renderer::~Renderer()
 }
 
 
-void Renderer::precomputeRays(const float fov)
+void Renderer::precomputeRays()
 {
-	precomputedRays.reserve(800 * 600);
-	primaryRays.reserve(800 * 600);
+	precomputedRays.reserve(width * height);
+	primaryRays.reserve(width * height);
 	
 	// scale = tan(alpha/2 * pi/180)
 	float scale = tan(fov * 0.00872665);
 
-	for (int y = 0; y < 600; y++)
+	for (int y = 0; y < height; y++)
 	{
-		for (int x = 0; x < 800; x++)
+		for (int x = 0; x < width; x++)
 		{
-			precomputedRays.emplace_back(Ray({ (2 * (x + 0.5) / (float)800 - 1) * scale * aspectRatio, (1 - 2 * (y + 0.5) / (float)600) * scale, -1, 0 }));
+			precomputedRays.emplace_back(Ray({ (2 * (x + 0.5) / (float)width - 1) * scale * aspectRatio, (1 - 2 * (y + 0.5) / (float)height) * scale, -1, 0 }));
 			primaryRays.emplace_back(Ray());
 		}
 	}

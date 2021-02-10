@@ -12,6 +12,9 @@ public:
 	int run();
 
 private:
+	const size_t width;
+	const size_t height;
+
 	sf::Texture texture;
 	sf::Sprite renderedImage;
 
