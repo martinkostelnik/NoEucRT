@@ -18,16 +18,46 @@ Renderer::~Renderer()
 	delete[] pixels;
 }
 
+
+void Renderer::precomputeRays(const float fov)
+{
+	precomputedRays.reserve(800 * 600);
+	primaryRays.reserve(800 * 600);
+	
+	// scale = tan(alpha/2 * pi/180)
+	float scale = tan(fov * 0.00872665);
+
+	for (int y = 0; y < 600; y++)
+	{
+		for (int x = 0; x < 800; x++)
+		{
+			precomputedRays.emplace_back(Ray({ (2 * (x + 0.5) / (float)800 - 1) * scale * aspectRatio, (1 - 2 * (y + 0.5) / (float)600) * scale, -1, 0 }));
+			primaryRays.emplace_back(Ray());
+		}
+	}
+}
+
 void Renderer::render(const Scene& scene, sf::Texture& texture)
 {
-	sf::Vector2u size = texture.getSize();
+	const sf::Vector2u size = texture.getSize();
 
-	// scale = tan(alpha/2 * pi/180)
-	float scale = tan(scene.mainCamera.fov * 0.00872665);
-	float distance = 0.0;
-	float minDistance = FLT_MAX;
+	// Transform all rays to world space
+	for (int y = 0; y < size.y; y++)
+	{
+		for (int x = 0; x < size.x; x++)
+		{
+			size_t position = y * size.x + x;
 
-	#pragma omp parallel for private(distance, minDistance)
+			for (int i = 0; i < 4; i++)
+			{
+				primaryRays[position].origin[i] = precomputedRays[position].origin.x * scene.mainCamera.toWorld[0][i] + precomputedRays[position].origin.y * scene.mainCamera.toWorld[1][i] + precomputedRays[position].origin.z * scene.mainCamera.toWorld[2][i] + precomputedRays[position].origin.w * scene.mainCamera.toWorld[3][i];
+				primaryRays[position].direction[i] = precomputedRays[position].direction.x * scene.mainCamera.toWorld[0][i] + precomputedRays[position].direction.y * scene.mainCamera.toWorld[1][i] + precomputedRays[position].direction.z * scene.mainCamera.toWorld[2][i] + precomputedRays[position].direction.w * scene.mainCamera.toWorld[3][i];
+			}
+		}
+	}
+
+	// Render an image
+	#pragma omp parallel for
 	for (int y = 0; y < size.y; y++)
 	{
 		#pragma omp parallel for
@@ -35,26 +65,14 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 		{
 			size_t position = ((y * size.x) + x) * 4;
 			bool hit = false;
-
-			Ray primaryRay({ (2 * (x + 0.5) / (float)size.x - 1) * scale * aspectRatio, (1 - 2 * (y + 0.5) / (float)size.y) * scale, -1, 0 });
-
-			// Transform ray origin using camera world transformation matrix
-			// Calculate ray direction and transform it using camera world transformation matrix
-			#pragma omp simd
-			for (int i = 0; i < 4; i++)
-			{
-				primaryRay.origin[i] = primaryRay.origin.x * scene.mainCamera.toWorld[0][i] + primaryRay.origin.y * scene.mainCamera.toWorld[1][i] + primaryRay.origin.z * scene.mainCamera.toWorld[2][i] + primaryRay.origin.w * scene.mainCamera.toWorld[3][i];
-				primaryRay.direction[i] = primaryRay.direction.x * scene.mainCamera.toWorld[0][i] + primaryRay.direction.y * scene.mainCamera.toWorld[1][i] + primaryRay.direction.z * scene.mainCamera.toWorld[2][i] + primaryRay.direction.w * scene.mainCamera.toWorld[3][i];
-			}
-
-			distance = 0.0;
-			minDistance = FLT_MAX;
+			float distance = 0.0;
+			float minDistance = FLT_MAX;
 
 			for (const auto& object : scene.objects)
 			{
 				for (const auto& triangle : object.triangles)
 				{
-					if (primaryRay.intersectsTriangle(triangle, distance)) // distance is out parameter
+					if (primaryRays[position / 4].intersectsTriangle(triangle, distance)) // distance is out parameter
 					{
 						hit = true;
 

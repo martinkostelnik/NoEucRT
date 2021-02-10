@@ -29,6 +29,10 @@ int NoEucEngine::run()
 		model.assembleTriangles();
 	}
 
+	// Ray preprocessing, this function precomputes all ray directions in camera space.
+	// Rays are then stored sequentially in a vector for simd support.
+	renderer.precomputeRays(scene.mainCamera.fov);
+
 	sf::Clock fpsClock;
 
 	while (window.isOpen())
