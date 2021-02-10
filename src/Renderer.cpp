@@ -72,10 +72,12 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 
 			for (const auto& object : scene.objects)
 			{
-				for (const auto& triangle : object.triangles)
+				if (primaryRays[position / 4].intersectsAABB(object.boundingBox))
 				{
-					if (primaryRays[position / 4].intersectsTriangle(triangle, distance)) // distance is out parameter
+					for (const auto& triangle : object.triangles)
 					{
+						if (primaryRays[position / 4].intersectsTriangle(triangle, distance)) // distance is out parameter
+						{
 						hit = true;
 
 							if (distance < minDistance)
