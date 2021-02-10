@@ -3,7 +3,8 @@
 #include <fstream>
 #include <sstream>
 
-Model::Model() : toWorld(1.0f)
+Model::Model() :
+	toWorld(1.0f)
 {
 }
 

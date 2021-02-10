@@ -1,7 +1,9 @@
 #include "Scene.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
-Scene::Scene() : objects(), mainCamera()
+Scene::Scene() :
+	objects(),
+	mainCamera()
 {
 	/*Model testingTriangle;
 	testingTriangle.vertices = { {0, 0, -500, 1}, {50, 0, -500, 1}, {0, 50, -500, 1} };
