@@ -19,5 +19,8 @@ add_executable(NoEucRT src/main.cpp
 			   src/Triangle.hpp src/Triangle.cpp
 			   src/AABB.hpp src/AABB.cpp
 			   src/BVH.hpp src/BVH.cpp
-			   src/BVHNode.hpp src/BVHNode.cpp)
+			   src/BVHNode.hpp src/BVHNode.cpp
+			   src/Light.hpp src/Light.cpp
+			   src/Shader.hpp src/Shader.cpp
+			   src/GouraudShader.hpp src/GouraudShader.cpp)
 target_link_libraries(NoEucRT sfml-graphics sfml-window glm::glm)
