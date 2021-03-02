@@ -21,10 +21,10 @@ Scene::Scene() :
 	testingCube.indices = {0, 1, 2, 0, 2, 3, 0, 4, 3, 3, 4, 7, 4, 5, 6, 4, 6, 7, 1, 2, 5, 2, 5, 6, 0, 1, 4, 1, 4, 5, 2, 3, 7, 2, 6, 7};
 	objects.push_back(testingCube);
 
-	/*Model floor;
+	Model floor;
 	floor.vertices = { {10000, -200, 10000, 1}, {10000, -200, -10000, 1}, {-10000, -200, -10000, 1}, {-10000, -200, 10000, 1}};
 	floor.indices = {0, 1, 2, 0, 2, 3};
-	objects.push_back(floor);*/
+	objects.push_back(floor);
 
 	/*Model teapot("teapot.obj");
 	teapot.toWorld = glm::scale(teapot.toWorld, { 100, 100, 100 });

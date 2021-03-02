@@ -39,7 +39,7 @@ void Renderer::precomputeRays()
 	}
 }
 
-void Renderer::render(const Scene& scene, sf::Texture& texture)
+void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& texture)
 {
 	const sf::Vector2u size = texture.getSize();
 
@@ -78,9 +78,10 @@ void Renderer::render(const Scene& scene, sf::Texture& texture)
 								minDistance = distance;
 
 								// Shading
-								pixels[position * 4] = 255;	// RED
-								pixels[position * 4 + 1] = 0; // GREEN
-								pixels[position * 4 + 2] = 0; // BLUE
+								glm::vec3 color = shader.getColor();
+								pixels[position * 4] = color.x;	// RED
+								pixels[position * 4 + 1] = color.y; // GREEN
+								pixels[position * 4 + 2] = color.z; // BLUE
 							}
 						}
 					}

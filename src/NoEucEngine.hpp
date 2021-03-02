@@ -4,6 +4,7 @@
 
 #include "Renderer.hpp"
 #include "Scene.hpp"
+#include "Shader.hpp"
 
 class NoEucEngine
 {
@@ -29,4 +30,6 @@ private:
 
 	void handleEvents();
 	void handleMovement();
+
+	Shader* activeShader;
 };
