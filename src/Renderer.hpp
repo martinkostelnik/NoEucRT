@@ -4,13 +4,14 @@
 
 #include "Scene.hpp"
 #include "Ray.hpp"
+#include "Shader.hpp"
 
 class Renderer
 {
 public:
 	Renderer(const size_t width, const size_t height, const float& fov);
 	~Renderer();
-	void render(const Scene& scene, sf::Texture& texture);
+	void render(const Scene& scene, const Shader& shader, sf::Texture& texture);
 	void precomputeRays();
 
 private:

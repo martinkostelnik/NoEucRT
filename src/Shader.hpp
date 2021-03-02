@@ -5,7 +5,5 @@ class Shader
 {
 public:
 	Shader();
-
-private:
-	virtual glm::vec3 getColor() = 0;
+	virtual glm::vec3 getColor() const = 0;
 };

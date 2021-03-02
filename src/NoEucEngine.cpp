@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
+#include "GouraudShader.hpp"
 
 NoEucEngine::NoEucEngine() :
 	width(800),
@@ -20,6 +21,11 @@ NoEucEngine::NoEucEngine() :
 	fpsText.setFont(fpsFont);
 	fpsText.setCharacterSize(18);
 	fpsText.setFillColor(sf::Color::Red);
+
+	window.setMouseCursorVisible(false);
+	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
+
+	activeShader = new GouraudShader();
 }
 
 int NoEucEngine::run()
@@ -54,7 +60,7 @@ int NoEucEngine::run()
 		fpsText.setString(std::to_string(1 / fpsClock.restart().asSeconds()));
 
 		// Render image
-		renderer.render(scene, texture);
+		renderer.render(scene, *activeShader, texture);
 
 		// Display image
 		window.clear();
@@ -107,12 +113,14 @@ void NoEucEngine::handleMovement()
 	{
 		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, -elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, elapsedTime.asSeconds() * scene.mainCamera.speed, 0 });
-	}
+
+	sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+
+	float deltaX = mousePosition.x - width * 0.5;
+	float deltaY = mousePosition.y - height * 0.5;
+
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaY * 0.01f, { 1, 0, 0 });
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaX * 0.01f, { 0, 1, 0 });
+
+	sf::Mouse::setPosition(sf::Vector2i( width * 0.5, height * 0.5), window);
 }
