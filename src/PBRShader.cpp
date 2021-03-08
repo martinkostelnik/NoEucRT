@@ -23,7 +23,9 @@ glm::vec3 PBRShader::getColor(const Ray& primaryRay, const Scene& scene, const M
         glm::vec3 lightDirection = light.position - hitPoint;
         glm::vec3 lightAmount = light.intensity * light.color / (4 * glm::pi<float>() * glm::length2(lightDirection));
 
-        hitColor += hitModel.albedo * lightAmount * std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
+        Ray shadowRay({ hitPoint, 1.0f }, { lightDirection, 0.0f });
+
+        hitColor += float(shadowRay.seesLight(light, scene)) * hitModel.albedo * lightAmount * std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
     }
 
     return glm::clamp(hitColor, { 0.0f }, { 255.0f });
