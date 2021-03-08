@@ -18,8 +18,10 @@ public:
 	void loadFromFile(std::string fileName);
 
 	std::vector<glm::vec4> vertices;
+	std::vector<glm::vec3> vertexNormals;
 	std::vector<size_t> indices;
 	glm::mat4 toWorld;
+	glm::vec3 albedo;
 
 	std::vector<Triangle> triangles;
 	AABB boundingBox;
