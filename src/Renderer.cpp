@@ -95,8 +95,8 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 			else // we hit nothing -- set black
 			{
 				pixels[position * 4] = 0; // RED
-				pixels[position * 4 + 1] = 0; // GREEN
-				pixels[position * 4 + 2] = 0; // BLUE
+				pixels[position * 4 + 1] = 191; // GREEN
+				pixels[position * 4 + 2] = 255; // BLUE
 			}
 		}
 	}

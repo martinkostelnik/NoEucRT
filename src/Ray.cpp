@@ -13,6 +13,12 @@ Ray::Ray(const glm::vec4& direction) :
 {
 }
 
+Ray::Ray(const glm::vec4& origin, const glm::vec4& direction) : 
+    origin(origin),
+    direction(direction)
+{
+}
+
 bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) const
 {
     const float EPSILON = 0.0000001;
@@ -93,4 +99,29 @@ bool Ray::intersectsAABB(const AABB& aabb) const
     }
 
     return tmax > std::max(tmin, 0.0f);
+}
+
+bool Ray::seesLight(const Light& light, const Scene& scene) const
+{
+    const float distance = glm::distance(light.position, { origin });
+    float hitDistance = 0.0f;
+
+    for (const auto& object : scene.objects)
+    {
+        if (intersectsAABB(object.boundingBox))
+        {
+            for (const auto& triangle : object.triangles)
+            {
+                if (intersectsTriangle(triangle, hitDistance)) // hitDistance is out parameter
+                {
+                    if (hitDistance < distance)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;    
 }
