@@ -6,8 +6,9 @@ class Light
 public:
 	Light();
 	Light(const glm::vec3 position, const float intensity);
+	Light(const glm::vec3 position, const float intensity, const glm::vec3 color);
 
-private:
 	const glm::vec3 position;
 	const float intensity;
+	const glm::vec3 color;
 };

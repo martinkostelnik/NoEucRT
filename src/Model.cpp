@@ -4,11 +4,14 @@
 #include <sstream>
 
 Model::Model() :
-	toWorld(1.0f)
+	toWorld(1.0f),
+	albedo(1.0f, 0.0f, 0.0f)
 {
 }
 
-Model::Model(const std::string fileName) : toWorld(1.0f)
+Model::Model(const std::string fileName) :
+	toWorld(1.0f),
+	albedo(1.0f, 0.0f, 0.0f)
 {
 	loadFromFile(fileName);
 }
@@ -89,6 +92,15 @@ void Model::loadFromFile(std::string fileName)
 			indices.push_back(stoi(f1) - 1);
 			indices.push_back(stoi(f2) - 1);
 			indices.push_back(stoi(f3) - 1);
+		}
+		else if (type == "vn") // Reading vertex normal
+		{
+			float x = 0.0,
+				  y = 0.0,
+				  z = 0.0;
+
+			lineStream >> x >> y >> z;
+			vertexNormals.push_back({ x, y, z });
 		}
 	}
 	fileHandle.close();

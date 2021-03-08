@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
-#include "GouraudShader.hpp"
+#include "PBRShader.hpp"
 
 NoEucEngine::NoEucEngine() :
 	width(800),
@@ -25,7 +25,7 @@ NoEucEngine::NoEucEngine() :
 	window.setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 
-	activeShader = new GouraudShader();
+	activeShader = new PBRShader();
 }
 
 int NoEucEngine::run()
@@ -119,8 +119,8 @@ void NoEucEngine::handleMovement()
 	float deltaX = mousePosition.x - width * 0.5;
 	float deltaY = mousePosition.y - height * 0.5;
 
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaY * 0.01f, { 1, 0, 0 });
 	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaX * 0.01f, { 0, 1, 0 });
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaY * 0.01f, { 1, 0, 0 });
 
 	sf::Mouse::setPosition(sf::Vector2i( width * 0.5, height * 0.5), window);
 }

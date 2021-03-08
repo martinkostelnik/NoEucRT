@@ -20,7 +20,6 @@ Renderer::~Renderer()
 	delete[] pixels;
 }
 
-
 void Renderer::precomputeRays()
 {
 	precomputedRays.reserve(width * height);
@@ -62,6 +61,8 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 			bool hit = false;
 			float distance = 0.0;
 			float minDistance = FLT_MAX;
+			const Model* hitObject = nullptr;
+			const Triangle* hitTriangle = nullptr;
 
 			for (const auto& object : scene.objects)
 			{
@@ -76,19 +77,22 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 							if (distance < minDistance)
 							{
 								minDistance = distance;
-
-								// Shading
-								glm::vec3 color = shader.getColor();
-								pixels[position * 4] = color.x;	// RED
-								pixels[position * 4 + 1] = color.y; // GREEN
-								pixels[position * 4 + 2] = color.z; // BLUE
+								hitObject = &object;
+								hitTriangle = &triangle;
 							}
 						}
 					}
 				}
 			}
 
-			if (!hit) // we hit nothing -- set black
+			if (hit)
+			{
+				glm::vec3 color = shader.getColor(primaryRays[position], scene, *hitObject, *hitTriangle, minDistance);
+				pixels[position * 4] = color.x;	// RED
+				pixels[position * 4 + 1] = color.y; // GREEN
+				pixels[position * 4 + 2] = color.z; // BLUE
+			}
+			else // we hit nothing -- set black
 			{
 				pixels[position * 4] = 0; // RED
 				pixels[position * 4 + 1] = 0; // GREEN
@@ -96,5 +100,6 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 			}
 		}
 	}
+
 	texture.update(pixels);
 }
