@@ -22,5 +22,5 @@ add_executable(NoEucRT src/main.cpp
 			   src/BVHNode.hpp src/BVHNode.cpp
 			   src/Light.hpp src/Light.cpp
 			   src/Shader.hpp src/Shader.cpp
-			   src/GouraudShader.hpp src/GouraudShader.cpp)
+			   src/PBRShader.hpp src/PBRShader.cpp)
 target_link_libraries(NoEucRT sfml-graphics sfml-window glm::glm)
