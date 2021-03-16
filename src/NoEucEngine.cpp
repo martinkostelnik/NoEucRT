@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include "PBRShader.hpp"
 
 NoEucEngine::NoEucEngine() :
@@ -97,21 +99,33 @@ void NoEucEngine::handleMovement()
 {
 	sf::Time elapsedTime = movementClock.restart();
 
+	glm::vec3 scale(0.0f);
+	glm::qua<float> orientation;
+	glm::vec3 translation(0.0f);
+	glm::vec3 skew(0.0f);
+	glm::vec4 pers(0.0f);
+	
+
+	glm::decompose(scene.mainCamera.toWorld, scale, orientation, translation, skew, pers);
+	glm::vec3 angles = glm::eulerAngles(orientation) * 180.0f / glm::pi<float>();
+	std::cout << glm::yaw(orientation) * 180.0f / glm::pi<float>() << " : " << glm::sin(glm::yaw(orientation)) * 180.0f / glm::pi<float>() << std::endl;
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, -elapsedTime.asSeconds() * scene.mainCamera.speed });
+		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { 0, 0, glm::cos(angles.y) * -elapsedTime.asSeconds() * scene.mainCamera.speed }) * scene.mainCamera.toWorld;
+		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { glm::sin(angles.y) * elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 }) * scene.mainCamera.toWorld;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
+		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 }) * scene.mainCamera.toWorld;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { 0, 0, elapsedTime.asSeconds() * scene.mainCamera.speed });
+		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { 0, 0, elapsedTime.asSeconds() * scene.mainCamera.speed }) * scene.mainCamera.toWorld;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
+		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 }) * scene.mainCamera.toWorld;
 	}
 
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
@@ -120,7 +134,7 @@ void NoEucEngine::handleMovement()
 	float deltaY = mousePosition.y - height * 0.5;
 
 	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaX * 0.01f, { 0, 1, 0 });
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaY * 0.01f, { 1, 0, 0 });
+	//scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaY * 0.01f, { 1, 0, 0 });
 
-	sf::Mouse::setPosition(sf::Vector2i( width * 0.5, height * 0.5), window);
+	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 }
