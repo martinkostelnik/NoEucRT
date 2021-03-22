@@ -144,8 +144,6 @@ void NoEucEngine::handleMovement()
 		deltaY = 90 + tmp;
 	}
 
-	std::cout << deltaY << " : " << scene.mainCamera.Xrotation << std::endl;
-
 	// Rotation around X axis
 	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -glm::radians(deltaY), { 1, 0, 0 });
 
