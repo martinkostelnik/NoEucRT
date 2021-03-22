@@ -36,9 +36,12 @@ Scene::Scene() :
 	donut.toWorld = glm::scale(donut.toWorld, { 100, 100, 100 });
 	objects.push_back(donut);*/
 
-	Light l({ 0, 100, 0 }, 500000000, { 1.0f, 1.0f, 1.0f });
+	Light l({ 0, 100, 0 }, 5000000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	lights.push_back(l);
 
-	Light l2({ 150, 100, -500 }, 500000000, { 1.0f, 1.0f, 1.0f });
+	Light l2({ 150, 100, -500 }, 5000000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	lights.push_back(l2);
+
+	Light sun({ 0, -1, 0 }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
+	lights.push_back(sun);
 }
