@@ -99,42 +99,60 @@ void NoEucEngine::handleMovement()
 {
 	sf::Time elapsedTime = movementClock.restart();
 
-	glm::vec3 scale(0.0f);
-	glm::qua<float> orientation;
-	glm::vec3 translation(0.0f);
-	glm::vec3 skew(0.0f);
-	glm::vec4 pers(0.0f);
-	
-
-	glm::decompose(scene.mainCamera.toWorld, scale, orientation, translation, skew, pers);
-	glm::vec3 angles = glm::eulerAngles(orientation) * 180.0f / glm::pi<float>();
-	std::cout << glm::yaw(orientation) * 180.0f / glm::pi<float>() << " : " << glm::sin(glm::yaw(orientation)) * 180.0f / glm::pi<float>() << std::endl;
-
+	// Movement
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { 0, 0, glm::cos(angles.y) * -elapsedTime.asSeconds() * scene.mainCamera.speed }) * scene.mainCamera.toWorld;
-		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { glm::sin(angles.y) * elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 }) * scene.mainCamera.toWorld;
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
+			{ 0,
+			  -glm::sin(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed,
+			  -glm::cos(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed });
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 }) * scene.mainCamera.toWorld;
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { 0, 0, elapsedTime.asSeconds() * scene.mainCamera.speed }) * scene.mainCamera.toWorld;
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
+			{ 0,
+			  glm::sin(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed,
+			  glm::cos(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed });
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		scene.mainCamera.toWorld = glm::translate(glm::mat4x4(1.0f), { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 }) * scene.mainCamera.toWorld;
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
 	}
 
+	// Rotation
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
 
+	// Get distance the mouse moved in both directions
 	float deltaX = mousePosition.x - width * 0.5;
 	float deltaY = mousePosition.y - height * 0.5;
 
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaX * 0.01f, { 0, 1, 0 });
-	//scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -deltaY * 0.01f, { 1, 0, 0 });
+	float tmp = scene.mainCamera.Xrotation;
+	scene.mainCamera.Xrotation -= deltaY;
+	
+	if (scene.mainCamera.Xrotation > 90.0)
+	{
+		scene.mainCamera.Xrotation = 90;
+		deltaY = -90 + tmp;
+	}
+	else if (scene.mainCamera.Xrotation < -90)
+	{
+		scene.mainCamera.Xrotation = -90;
+		deltaY = 90 + tmp;
+	}
+
+	std::cout << deltaY << " : " << scene.mainCamera.Xrotation << std::endl;
+
+	// Rotation around X axis
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -glm::radians(deltaY), { 1, 0, 0 });
+
+	// Rotation around Y axis
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 });
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -glm::radians(deltaX), { 0, 1, 0 });
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 });
 
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 }

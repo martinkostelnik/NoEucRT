@@ -9,5 +9,6 @@ public:
 
 	float fov;
 	float speed;
+	float Xrotation;
 	glm::mat4 toWorld;
 };

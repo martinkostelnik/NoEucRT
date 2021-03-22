@@ -4,11 +4,16 @@
 class Light
 {
 public:
-	Light();
-	Light(const glm::vec3 position, const float intensity);
-	Light(const glm::vec3 position, const float intensity, const glm::vec3 color);
+	enum class Type
+	{
+		Distant,
+		Point
+	};
+
+	Light(const glm::vec3 position, const float intensity, const glm::vec3 color, const Type type);
 
 	const glm::vec3 position;
 	const float intensity;
 	const glm::vec3 color;
+	const Type type;
 };
