@@ -1,7 +1,5 @@
 #include "PBRShader.hpp"
 #include <glm/gtx/norm.hpp>
-#include <iostream>
-#include "glm/gtx/string_cast.hpp"
 
 PBRShader::PBRShader()
 {
@@ -18,27 +16,28 @@ glm::vec3 PBRShader::getColor(const Ray& primaryRay, const Scene& scene, const M
     
     glm::vec3 hitColor(0.0f);
 
-    for (const auto& light : scene.lights)
+    #pragma omp parallel for
+    for (int i = 0; i < scene.lights.size(); i++)
     {
         glm::vec3 lightDirection;
         glm::vec3 lightAmount;
 
-        switch (light.type)
+        switch (scene.lights[i].type)
         {
         case Light::Type::Distant:
-            lightDirection = -light.position;
-            lightAmount = light.intensity * light.color * std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
+            lightDirection = -scene.lights[i].position;
+            lightAmount = scene.lights[i].intensity * scene.lights[i].color * std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
             break;
             
         case Light::Type::Point:
-            lightDirection = light.position - hitPoint;
-            lightAmount = light.intensity * light.color * 100.0f / (4 * glm::pi<float>() * glm::length2(lightDirection)) * std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
+            lightDirection = scene.lights[i].position - hitPoint;
+            lightAmount = scene.lights[i].intensity * scene.lights[i].color * 1e4f / (4 * glm::pi<float>() * glm::length2(lightDirection)) * std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
             break;
         }
         Ray shadowRay({ hitPoint, 1.0f }, { lightDirection, 0.0f });
 
-        hitColor += float(shadowRay.seesLight(light, scene)) * hitModel.albedo * lightAmount;
+        hitColor += float(shadowRay.seesLight(scene.lights[i], scene)) * hitModel.material.albedo * lightAmount;
     }
 
-    return glm::clamp(hitColor, { 0.0f }, { 255.0f });
+    return glm::clamp(hitColor, 0.0f, 255.0f);
 }
