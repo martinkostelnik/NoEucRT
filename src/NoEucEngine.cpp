@@ -5,6 +5,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "PBRShader.hpp"
+#include "PhongShader.hpp"
 
 NoEucEngine::NoEucEngine() :
 	width(800),
@@ -27,7 +28,9 @@ NoEucEngine::NoEucEngine() :
 	window.setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 
-	activeShader = new PBRShader();
+	shaders = { new PBRShader(), new PhongShader() };
+	shaderIndex = 0;
+	activeShader = shaders[shaderIndex];
 }
 
 int NoEucEngine::run()
@@ -89,6 +92,11 @@ void NoEucEngine::handleEvents()
 			if (event.key.code == sf::Keyboard::Escape)
 			{
 				window.close();
+			}
+			else if (event.key.code == sf::Keyboard::Q)
+			{
+				shaderIndex = shaderIndex == 0 ? 1 : 0;
+				activeShader = shaders[shaderIndex];
 			}
 			break;
 		}

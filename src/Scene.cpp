@@ -10,6 +10,9 @@ Scene::Scene() :
 							 {-100, -100, -200, 1}, {0, -100, -200, 1}, {0, 0, -200, 1}, {-100, 0, -200, 1} };
 	testingCube.indices = {0, 1, 2, 0, 2, 3, 0, 3, 4, 3, 7, 4, 6, 5, 4, 4, 7, 6, 1, 5, 2, 2, 5, 6, 0, 4, 1, 1, 4, 5, 2, 7, 3, 2, 6, 7};
 	objects.push_back(testingCube);
+	testingCube.material.shininess = 100.0f;
+	testingCube.material.kd = 1.0f;
+	testingCube.material.ks = 1.0f;
 
 	Model floor;
 	floor.vertices = { {10000, -200, 10000, 1}, {10000, -200, -10000, 1}, {-10000, -200, -10000, 1}, {-10000, -200, 10000, 1}};
@@ -36,10 +39,10 @@ Scene::Scene() :
 	donut.toWorld = glm::scale(donut.toWorld, { 100, 100, 100 });
 	objects.push_back(donut);*/
 
-	Light l({ 0, 100, 0 }, 5000000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	lights.push_back(l);
+	//Light l({ 0, 100, 0 }, 5000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	//lights.push_back(l);
 
-	Light l2({ 150, 100, -500 }, 5000000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l2({ 150, 100, -500 }, 5000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	lights.push_back(l2);
 
 	Light sun({ 0, -1, 0 }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);

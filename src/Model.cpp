@@ -5,13 +5,13 @@
 
 Model::Model() :
 	toWorld(1.0f),
-	albedo(1.0f, 0.0f, 0.0f)
+	material(Material({ { 1.0f, 0.0f, 0.0f } }))
 {
 }
 
 Model::Model(const std::string fileName) :
 	toWorld(1.0f),
-	albedo(1.0f, 0.0f, 0.0f)
+	material(Material({ 1.0f, 0.0f, 0.0f }))
 {
 	loadFromFile(fileName);
 }

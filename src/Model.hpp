@@ -6,6 +6,7 @@
 
 #include "Triangle.hpp"
 #include "AABB.hpp"
+#include "Material.hpp"
 
 class Model
 {
@@ -20,8 +21,10 @@ public:
 	std::vector<glm::vec4> vertices;
 	std::vector<glm::vec3> vertexNormals;
 	std::vector<size_t> indices;
+
 	glm::mat4 toWorld;
-	glm::vec3 albedo;
+	
+	Material material;
 
 	std::vector<Triangle> triangles;
 	AABB boundingBox;

@@ -31,5 +31,8 @@ private:
 	void handleEvents();
 	void handleMovement();
 
+	// TODO: Improve circular vector
+	std::vector<Shader*> shaders;
+	size_t shaderIndex;
 	Shader* activeShader;
 };
