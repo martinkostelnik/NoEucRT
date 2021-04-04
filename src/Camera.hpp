@@ -14,7 +14,8 @@ public:
 	float Xrotation;
 
 	glm::mat4 toWorld;
-	glm::vec3 position;
+	glm::vec4 position;
+	glm::vec4 lookAt;
 
 	void reset();
 	bool AABBCollision(const AABB& aabb) const;
