@@ -1,10 +1,8 @@
 #include "NoEucEngine.hpp"
-#include <iostream>
-#include <string>
+
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include "PBRShader.hpp"
+
+#include "LambertianShader.hpp"
 #include "PhongShader.hpp"
 
 NoEucEngine::NoEucEngine() :
@@ -28,7 +26,7 @@ NoEucEngine::NoEucEngine() :
 	window.setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 
-	shaders = { new PBRShader(), new PhongShader() };
+	shaders = { new LambertianShader(), new PhongShader() };
 	shaderIndex = 0;
 	activeShader = shaders[shaderIndex];
 }

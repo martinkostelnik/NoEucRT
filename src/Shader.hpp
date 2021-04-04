@@ -1,5 +1,7 @@
 #pragma once
+
 #include <glm/glm.hpp>
+
 #include "Ray.hpp"
 #include "Scene.hpp"
 #include "Model.hpp"

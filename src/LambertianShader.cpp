@@ -1,20 +1,21 @@
-#include "PBRShader.hpp"
+#include "LambertianShader.hpp"
+
 #include <glm/gtx/norm.hpp>
 
-PBRShader::PBRShader()
+LambertianShader::LambertianShader()
 {
 }
 
-glm::vec3 PBRShader::getColor(const Ray& primaryRay, const Scene& scene, const Model& hitModel, const Triangle& hitTriangle, const float& distance) const
+glm::vec3 LambertianShader::getColor(const Ray& primaryRay, const Scene& scene, const Model& hitModel, const Triangle& hitTriangle, const float& distance) const
 {
+    glm::vec3 hitColor(0.0f);
+
     const glm::vec3 hitPoint = primaryRay.origin + glm::normalize(primaryRay.direction) * distance;
 
     const glm::vec3 edge1 = { hitTriangle.v2.x - hitTriangle.v1.x, hitTriangle.v2.y - hitTriangle.v1.y, hitTriangle.v2.z - hitTriangle.v1.z };
     const glm::vec3 edge2 = { hitTriangle.v3.x - hitTriangle.v1.x, hitTriangle.v3.y - hitTriangle.v1.y, hitTriangle.v3.z - hitTriangle.v1.z };
     
     const glm::vec3 hitNormal = glm::normalize(glm::cross(edge1, edge2));
-    
-    glm::vec3 hitColor(0.0f);
 
     #pragma omp parallel for
     for (int i = 0; i < scene.lights.size(); i++)

@@ -1,5 +1,4 @@
 #include "Ray.hpp"
-#include <algorithm>
 
 Ray::Ray() :
     origin(0, 0, 0, 1),
@@ -84,21 +83,35 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) cons
 
 bool Ray::intersectsAABB(const AABB& aabb) const
 {
-    float tmin = FLT_MIN;
-    float tmax = FLT_MAX;
+    glm::vec3 invDir(1.0f / direction.x, 1.0f / direction.y, 1.0f / direction.z);
 
-    glm::vec3 invDir = { 1.0 / direction.x, 1.0 / direction.y, 1.0 / direction.z };
+    float t = 0.0f;
+    float t1 = (aabb.min.x - origin.x) * invDir.x;
+    float t2 = (aabb.max.x - origin.x) * invDir.x;
+    float t3 = (aabb.min.y - origin.y) * invDir.y;
+    float t4 = (aabb.max.y - origin.y) * invDir.y;
+    float t5 = (aabb.min.z - origin.z) * invDir.z;
+    float t6 = (aabb.max.z - origin.z) * invDir.z;
 
-    for (int i = 0; i < 3; i++)
+    float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+    float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+
+    // if tmax < 0, ray (line) is intersecting AABB, but the whole AABB is behind us
+    if (tmax < 0)
     {
-        float t1 = (aabb.min[i] - origin[i]) * invDir[i];
-        float t2 = (aabb.max[i] - origin[i]) * invDir[i];
-
-        tmin = std::max(tmin, std::min(t1, t2));
-        tmax = std::min(tmax, std::max(t1, t2));
+        t = tmax;
+        return false;
     }
 
-    return tmax > std::max(tmin, 0.0f);
+    // if tmin > tmax, ray doesn't intersect AABB
+    if (tmin > tmax)
+    {
+        t = tmax;
+        return false;
+    }
+
+    t = tmin;
+    return true;
 }
 
 bool Ray::seesLight(const Light& light, const Scene& scene) const

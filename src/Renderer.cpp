@@ -1,4 +1,5 @@
 #include "Renderer.hpp"
+
 #include "Ray.hpp"
 
 Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
