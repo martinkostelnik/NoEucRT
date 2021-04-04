@@ -1,4 +1,5 @@
 #include "PhongShader.hpp"
+
 #include <glm/gtx/norm.hpp>
 
 PhongShader::PhongShader()
@@ -19,7 +20,7 @@ glm::vec3 PhongShader::getColor(const Ray& primaryRay, const Scene& scene, const
     glm::vec3 diffuse(0.0f);
     glm::vec3 specular(0.0f);
 
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < scene.lights.size(); i++)
     {
         glm::vec3 lightDirection;
@@ -38,15 +39,15 @@ glm::vec3 PhongShader::getColor(const Ray& primaryRay, const Scene& scene, const
             break;
         }
 
-        Ray shadowRay({ hitPoint, 1.0f }, { lightDirection, 0.0f });
+        Ray shadowRay({ hitPoint, 1.0f }, { glm::normalize(lightDirection), 0.0f });
         float visible = float(shadowRay.seesLight(scene.lights[i], scene));
 
-        glm::vec3 R = glm::reflect(lightDirection, hitNormal);
+        glm::vec3 R = glm::normalize(glm::reflect(glm::normalize(-lightDirection), hitNormal));
 
         diffuse += visible * hitModel.material.albedo * lightAmount * glm::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
         specular += visible * lightAmount * glm::pow(glm::max(0.0f, glm::dot(R, { -primaryRay.direction })), hitModel.material.shininess);
     }
-
+        
     hitColor = diffuse * hitModel.material.kd + specular * hitModel.material.ks;
 
     return glm::clamp(hitColor, 0.0f, 255.0f);
