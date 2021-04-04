@@ -1,11 +1,12 @@
 #include "Model.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 Model::Model() :
 	toWorld(1.0f),
-	material(Material({ { 1.0f, 0.0f, 0.0f } }))
+	material(Material({ 0.0f, 1.0f, 0.0f }))
 {
 }
 

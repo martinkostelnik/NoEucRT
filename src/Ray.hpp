@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include "Triangle.hpp"
 #include "AABB.hpp"
 #include "Light.hpp"

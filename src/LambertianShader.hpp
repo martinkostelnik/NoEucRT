@@ -2,9 +2,9 @@
 
 #include "Shader.hpp"
 
-class PBRShader : public Shader
+class LambertianShader : public Shader
 {
 public:
-	PBRShader();
+	LambertianShader();
 	glm::vec3 getColor(const Ray& primaryRay, const Scene& scene, const Model& hitModel, const Triangle& hitTriangle, const float& distance) const;
 };

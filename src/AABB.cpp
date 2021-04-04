@@ -1,5 +1,9 @@
 #include "AABB.hpp"
 
-AABB::AABB() : min(FLT_MAX), max(FLT_MIN)
+#include <limits>
+
+AABB::AABB() :
+	min(std::numeric_limits<float>::infinity()),
+	max(-std::numeric_limits<float>::infinity())
 {
 }
