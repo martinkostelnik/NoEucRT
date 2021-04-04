@@ -5,6 +5,11 @@
 #include "LambertianShader.hpp"
 #include "PhongShader.hpp"
 
+/************ DELETE THIS ************/
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
+/*************************************/
+
 NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
@@ -105,58 +110,80 @@ void NoEucEngine::handleMovement()
 {
 	sf::Time elapsedTime = movementClock.restart();
 
-	// Movement
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
-			{ 0,
-			  -glm::sin(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed,
-			  -glm::cos(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed });
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
-			{ 0,
-			  glm::sin(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed,
-			  glm::cos(glm::radians(scene.mainCamera.Xrotation)) * elapsedTime.asSeconds() * scene.mainCamera.speed });
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { elapsedTime.asSeconds() * scene.mainCamera.speed, 0, 0 });
-	}
-
 	// Rotation
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
 
-	// Get distance the mouse moved in both directions
+	// Get distance the mouse has moved in both directions
 	float deltaX = mousePosition.x - width * 0.5;
 	float deltaY = mousePosition.y - height * 0.5;
 
-	float tmp = scene.mainCamera.Xrotation;
+	// Save the previous rotation
+	float tmpRotation = scene.mainCamera.Xrotation;
 	scene.mainCamera.Xrotation -= deltaY;
-	
+
+	// Resolve maximum rotation around the X axis
+	// Maximum rotation is set to 90 degrees
 	if (scene.mainCamera.Xrotation > 90.0)
 	{
-		scene.mainCamera.Xrotation = 90;
-		deltaY = -90 + tmp;
+		scene.mainCamera.Xrotation = 90.0;
+		deltaY = -90.0 + tmpRotation;
 	}
-	else if (scene.mainCamera.Xrotation < -90)
+	else if (scene.mainCamera.Xrotation < -90.0)
 	{
-		scene.mainCamera.Xrotation = -90;
-		deltaY = 90 + tmp;
+		scene.mainCamera.Xrotation = -90.0;
+		deltaY = 90.0 + tmpRotation;
 	}
 
 	// Rotation around X axis
 	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -glm::radians(deltaY), { 1, 0, 0 });
 
 	// Rotation around Y axis
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 });
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
 	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -glm::radians(deltaX), { 0, 1, 0 });
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 });
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
 
+	// Reset mouse position to the middle of the window
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
+
+	// Recalculate the lookAt vector
+	scene.mainCamera.lookAt = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+
+	// Movement
+	glm::mat4 tmpMatrix = scene.mainCamera.toWorld;
+	const float distance = elapsedTime.asSeconds() * scene.mainCamera.speed;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
+			{ 0,
+			  -glm::sin(glm::radians(scene.mainCamera.Xrotation)) * distance,
+			  -glm::cos(glm::radians(scene.mainCamera.Xrotation)) * distance });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -distance, 0, 0 });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
+			{ 0,
+			  glm::sin(glm::radians(scene.mainCamera.Xrotation)) * distance,
+			  glm::cos(glm::radians(scene.mainCamera.Xrotation)) * distance });
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { distance, 0, 0 });
+	}
+
+	// Recalculate camera position in world space
+	scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	for (const auto& model : scene.objects)
+	{
+		if (scene.mainCamera.AABBCollision(model.boundingBox))
+		{
+			scene.mainCamera.toWorld = tmpMatrix;
+			break;
+		}
+	}
 }
