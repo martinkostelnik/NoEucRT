@@ -1,4 +1,5 @@
 #include "Ray.hpp"
+#include <iostream>
 
 Ray::Ray() :
     origin(0, 0, 0, 1),
@@ -81,7 +82,7 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) cons
     }
 }
 
-bool Ray::intersectsAABB(const AABB& aabb) const
+bool Ray::intersectsAABB(const AABB& aabb, float* const out_distance) const
 {
     glm::vec3 invDir(1.0f / direction.x, 1.0f / direction.y, 1.0f / direction.z);
 
@@ -109,8 +110,11 @@ bool Ray::intersectsAABB(const AABB& aabb) const
         t = tmax;
         return false;
     }
+    if (out_distance)
+    {
+        *out_distance = tmin;
+    }
 
-    t = tmin;
     return true;
 }
 
