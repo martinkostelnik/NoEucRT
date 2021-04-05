@@ -18,6 +18,6 @@ public:
 	glm::vec4 direction;
 
 	bool intersectsTriangle(const Triangle& triangle, float& out_distance) const;
-	bool intersectsAABB(const AABB& aabb) const;
+	bool intersectsAABB(const AABB& aabb, float* const out_distance = nullptr) const;
 	bool seesLight(const Light& light, const Scene& scene) const;
 };

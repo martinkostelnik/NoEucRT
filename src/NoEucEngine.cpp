@@ -149,41 +149,55 @@ void NoEucEngine::handleMovement()
 	scene.mainCamera.lookAt = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
 
 	// Movement
-	glm::mat4 tmpMatrix = scene.mainCamera.toWorld;
-	const float distance = elapsedTime.asSeconds() * scene.mainCamera.speed;
+	float distance = elapsedTime.asSeconds() * scene.mainCamera.speed;
+	glm::vec4 direction(0.0f);
 
+	// Keyboard control
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
-			{ 0,
-			  -glm::sin(glm::radians(scene.mainCamera.Xrotation)) * distance,
-			  -glm::cos(glm::radians(scene.mainCamera.Xrotation)) * distance });
+		direction.z += -1.0f;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { -distance, 0, 0 });
+		direction.x += -1.0f;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
-			{ 0,
-			  glm::sin(glm::radians(scene.mainCamera.Xrotation)) * distance,
-			  glm::cos(glm::radians(scene.mainCamera.Xrotation)) * distance });
+		direction.z += 1.0f;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld, { distance, 0, 0 });
+		direction.x += 1.0f;
 	}
+
+	// Collision
+	if (direction.x || direction.z)
+	{
+		glm::vec4 worldDirection = scene.mainCamera.toWorld * direction;
+		worldDirection.y = 0.0f;
+
+		Ray collisionRay(scene.mainCamera.position, glm::normalize(worldDirection));
+		float hitDistance = 0.0f;
+
+		// Test camera collision against each object in the scene
+		for (const auto& object : scene.objects)
+		{
+			if (collisionRay.intersectsAABB(object.boundingBox, &hitDistance))
+			{
+				if (distance > hitDistance)
+				{
+					distance = hitDistance - 10.0f; // Minimum distance to each object is 10
+				}
+			}
+		}
+	}
+	
+	// Move camera
+	scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
+											 { direction.x * distance,
+											   direction.z * glm::sin(glm::radians(scene.mainCamera.Xrotation)) * distance,
+											   direction.z * glm::cos(glm::radians(scene.mainCamera.Xrotation)) * distance});
 
 	// Recalculate camera position in world space
 	scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	for (const auto& model : scene.objects)
-	{
-		if (scene.mainCamera.AABBCollision(model.boundingBox))
-		{
-			scene.mainCamera.toWorld = tmpMatrix;
-			break;
-		}
-	}
 }

@@ -18,5 +18,4 @@ public:
 	glm::vec4 lookAt;
 
 	void reset();
-	bool AABBCollision(const AABB& aabb) const;
 };
