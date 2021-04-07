@@ -62,14 +62,14 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 			bool hit = false;
 			float distance = 0.0;
 			float minDistance = FLT_MAX;
-			const Model* hitObject = nullptr;
+			size_t hitObjectIndex = 0;
 			const Triangle* hitTriangle = nullptr;
 
-			for (const auto& object : scene.objects)
+			for (size_t i = 0; i < scene.objects.size(); i++)
 			{
-				if (primaryRays[position].intersectsAABB(object.boundingBox))
+				if (primaryRays[position].intersectsAABB(scene.objects[i]->boundingBox))
 				{
-					for (const auto& triangle : object.triangles)
+					for (const auto& triangle : scene.objects[i]->triangles)
 					{
 						if (primaryRays[position].intersectsTriangle(triangle, distance)) // distance is out parameter
 						{
@@ -78,7 +78,7 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 							if (distance < minDistance)
 							{
 								minDistance = distance;
-								hitObject = &object;
+								hitObjectIndex = i;
 								hitTriangle = &triangle;
 							}
 						}
@@ -88,7 +88,7 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 
 			if (hit)
 			{
-				glm::vec3 color = shader.getColor(primaryRays[position], scene, *hitObject, *hitTriangle, minDistance);
+				glm::vec3 color = shader.getColor(primaryRays[position], scene, *scene.objects[hitObjectIndex], *hitTriangle, minDistance);
 				pixels[position * 4] = color.x;	// RED
 				pixels[position * 4 + 1] = color.y; // GREEN
 				pixels[position * 4 + 2] = color.z; // BLUE

@@ -14,7 +14,7 @@ NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
 	window(sf::VideoMode(width, height, 24), "Non-Euclidean Ray Tracer", sf::Style::None),
-	scene(),
+	scene(Scene::createBaseScene()),
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),
@@ -31,7 +31,7 @@ NoEucEngine::NoEucEngine() :
 	window.setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 
-	shaders = { new LambertianShader(), new PhongShader() };
+	shaders = { std::make_shared<LambertianShader>(LambertianShader()), std::make_shared<PhongShader>(PhongShader()) };
 	shaderIndex = 0;
 	activeShader = shaders[shaderIndex];
 }
@@ -42,16 +42,16 @@ int NoEucEngine::run()
 	for (auto& model : scene.objects)
 	{
 		// Transform every vertex to world space
-		for (auto& vertex : model.vertices)
+		for (auto& vertex : model->vertices)
 		{
-			vertex = model.toWorld * vertex;
+			vertex = model->toWorld * vertex;
 		}
 
 		// Primitive assembly
-		model.assembleTriangles();
+		model->assembleTriangles();
 
 		// Construst BVH on model
-		model.constructBVH();
+		model->constructBVH();
 	}
 
 	// Ray preprocessing, this function precomputes all ray directions in camera space.
@@ -101,6 +101,13 @@ void NoEucEngine::handleEvents()
 				shaderIndex = shaderIndex == 0 ? 1 : 0;
 				activeShader = shaders[shaderIndex];
 			}
+			else if (event.key.code == sf::Keyboard::E)
+			{
+				scene.mainCamera.reset();
+			}
+			break;
+
+		default:
 			break;
 		}
 	}
@@ -182,11 +189,12 @@ void NoEucEngine::handleMovement()
 		// Test camera collision against each object in the scene
 		for (const auto& object : scene.objects)
 		{
-			if (collisionRay.intersectsAABB(object.boundingBox, &hitDistance))
+			if (collisionRay.intersectsAABB(object->boundingBox, &hitDistance))
 			{
-				if (distance > hitDistance)
+				if (hitDistance <= 5 || distance >= hitDistance) // We found the closest object the camera collides with
 				{
-					distance = hitDistance - 10.0f; // Minimum distance to each object is 10
+					distance = 0.0f;
+					break;
 				}
 			}
 		}
