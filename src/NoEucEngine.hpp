@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 #include "Renderer.hpp"
 #include "Scene.hpp"
@@ -31,8 +32,7 @@ private:
 	void handleEvents();
 	void handleMovement();
 
-	// TODO: Improve circular vector
-	std::vector<Shader*> shaders;
+	std::vector<std::shared_ptr<Shader>> shaders;
 	size_t shaderIndex;
-	Shader* activeShader;
+	std::shared_ptr<Shader> activeShader;
 };

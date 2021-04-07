@@ -125,9 +125,9 @@ bool Ray::seesLight(const Light& light, const Scene& scene) const
 
     for (const auto& object : scene.objects)
     {
-        if (intersectsAABB(object.boundingBox))
+        if (intersectsAABB(object->boundingBox))
         {
-            for (const auto& triangle : object.triangles)
+            for (const auto& triangle : object->triangles)
             {
                 if (intersectsTriangle(triangle, hitDistance)) // hitDistance is out parameter
                 {
