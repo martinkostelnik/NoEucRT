@@ -15,6 +15,16 @@ public:
 	void precomputeRays();
 
 private:
+	struct castRayData
+	{
+		bool hit;
+		size_t hitObjectIndex;
+		const Triangle* hitTriangle;
+		float hitDistance;
+	};
+
+	castRayData castRay(const Ray& ray, const Scene& scene) const;
+
 	const size_t width;
 	const size_t height;
 	const float aspectRatio;

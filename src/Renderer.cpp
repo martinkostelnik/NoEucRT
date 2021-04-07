@@ -1,6 +1,9 @@
 #include "Renderer.hpp"
 
 #include "Ray.hpp"
+#include "Portal.hpp"
+
+#include <iostream>
 
 Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
 	width(width),
@@ -39,6 +42,46 @@ void Renderer::precomputeRays()
 	}
 }
 
+Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) const
+{
+	castRayData data = { false, 0, nullptr, std::numeric_limits<float>::infinity() };
+	float distance = 0.0f;
+
+	for (size_t i = 0; i < scene.objects.size(); i++)
+	{
+		if (ray.intersectsAABB(scene.objects[i]->boundingBox))
+		{
+			for (const auto& triangle : scene.objects[i]->triangles)
+			{
+				if (ray.intersectsTriangle(triangle, distance)) // distance is out parameter
+				{
+					data.hit = true;
+
+					if (distance < data.hitDistance)
+					{
+						data.hitDistance = distance;
+						data.hitObjectIndex = i;
+						data.hitTriangle = &triangle;
+					}
+				}
+			}
+		}
+	}
+
+	// Portal handling
+	if (scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
+	{
+		glm::vec4 hitPoint = ray.origin + glm::normalize(ray.direction) * data.hitDistance;
+		auto portal = std::static_pointer_cast<const Portal>(scene.objects[data.hitObjectIndex]);
+
+		glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
+
+		Ray teleportedRay(outPoint, ray.direction);
+	}
+
+	return data;
+}
+
 void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& texture)
 {
 	const sf::Vector2u size = texture.getSize();
@@ -59,41 +102,17 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 		for (int x = 0; x < size.x; x++)
 		{
 			size_t position = ((y * size.x) + x);
-			bool hit = false;
-			float distance = 0.0;
-			float minDistance = FLT_MAX;
-			size_t hitObjectIndex = 0;
-			const Triangle* hitTriangle = nullptr;
 
-			for (size_t i = 0; i < scene.objects.size(); i++)
+			castRayData data = castRay(primaryRays[position], scene);
+
+			if (data.hit) // We hit something, invoke shader and set color
 			{
-				if (primaryRays[position].intersectsAABB(scene.objects[i]->boundingBox))
-				{
-					for (const auto& triangle : scene.objects[i]->triangles)
-					{
-						if (primaryRays[position].intersectsTriangle(triangle, distance)) // distance is out parameter
-						{
-							hit = true;
-
-							if (distance < minDistance)
-							{
-								minDistance = distance;
-								hitObjectIndex = i;
-								hitTriangle = &triangle;
-							}
-						}
-					}
-				}
-			}
-
-			if (hit)
-			{
-				glm::vec3 color = shader.getColor(primaryRays[position], scene, *scene.objects[hitObjectIndex], *hitTriangle, minDistance);
+				glm::vec3 color = shader.getColor(primaryRays[position], scene, *scene.objects[data.hitObjectIndex], *data.hitTriangle, data.hitDistance);
 				pixels[position * 4] = color.x;	// RED
 				pixels[position * 4 + 1] = color.y; // GREEN
 				pixels[position * 4 + 2] = color.z; // BLUE
 			}
-			else // we hit nothing -- set black
+			else // We hit nothing
 			{
 				pixels[position * 4] = 0; // RED
 				pixels[position * 4 + 1] = 191; // GREEN

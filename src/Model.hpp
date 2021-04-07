@@ -11,12 +11,19 @@
 class Model
 {
 public:
+	enum class Type
+	{
+		Euclidean,
+		Portal
+	};
+
 	Model();
+	Model(const Type type);
 	Model(const std::string fileName);
 
 	void assembleTriangles();
 	void constructBVH();
-	void loadFromFile(std::string fileName);
+	void loadFromFile(const std::string fileName);
 
 	std::vector<glm::vec4> vertices;
 	std::vector<glm::vec3> vertexNormals;
@@ -28,4 +35,6 @@ public:
 
 	std::vector<Triangle> triangles;
 	AABB boundingBox;
+
+	Type type;
 };

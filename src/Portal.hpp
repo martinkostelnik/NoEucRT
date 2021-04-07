@@ -10,4 +10,5 @@ public:
 	Portal();
 
 	glm::vec4 exit;
+	glm::vec4 center;
 };

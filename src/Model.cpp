@@ -6,13 +6,22 @@
 
 Model::Model() :
 	toWorld(1.0f),
-	material(Material({ 0.0f, 1.0f, 0.0f }))
+	material(Material({ 0.0f, 1.0f, 0.0f })),
+	type(Model::Type::Euclidean)
+{
+}
+
+Model::Model(const Type type) :
+	toWorld(1.0f),
+	material(Material({ 0.0f, 1.0f, 0.0f })),
+	type(type)
 {
 }
 
 Model::Model(const std::string fileName) :
 	toWorld(1.0f),
-	material(Material({ 1.0f, 0.0f, 0.0f }))
+	material(Material({ 1.0f, 0.0f, 0.0f })),
+	type(Model::Type::Euclidean)
 {
 	loadFromFile(fileName);
 }
@@ -58,7 +67,7 @@ void Model::constructBVH()
 	}
 }
 
-void Model::loadFromFile(std::string fileName)
+void Model::loadFromFile(const std::string fileName)
 {
 	std::ifstream fileHandle;
 	fileHandle.open(fileName);
