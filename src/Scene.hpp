@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "Camera.hpp"
 #include "Model.hpp"
@@ -11,7 +12,10 @@ class Scene
 public:
 	Scene();
 
-	std::vector<Model> objects;
+	std::vector<std::unique_ptr<Model>> objects;
 	std::vector<Light> lights;
 	Camera mainCamera;
+
+
+	static Scene createBaseScene();
 };
