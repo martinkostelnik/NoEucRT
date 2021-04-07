@@ -12,7 +12,7 @@ class Scene
 public:
 	Scene();
 
-	std::vector<std::unique_ptr<Model>> objects;
+	std::vector<std::shared_ptr<Model>> objects;
 	std::vector<Light> lights;
 	Camera mainCamera;
 
