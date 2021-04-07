@@ -3,7 +3,10 @@
 #include "Ray.hpp"
 #include "Portal.hpp"
 
+/************ DELETE THIS ************/
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
+/*************************************/
 
 Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
 	width(width),
@@ -16,7 +19,9 @@ Renderer::Renderer(const size_t width, const size_t height, const float& fov) :
 	pixels = new sf::Uint8[len] { 0 };
 
 	for (int i = 3; i < len; i += 4)
+	{
 		pixels[i] = 255;
+	}
 }
 
 Renderer::~Renderer()
@@ -30,7 +35,7 @@ void Renderer::precomputeRays()
 	primaryRays.reserve(width * height);
 	
 	// scale = tan(alpha/2 * pi/180)
-	float scale = tan(fov * 0.00872665);
+	float scale = tan(fov * 0.00872665f);
 
 	for (int y = 0; y < height; y++)
 	{
@@ -69,14 +74,20 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) cons
 	}
 
 	// Portal handling
-	if (scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
+	if (data.hit && scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
 	{
+		// Erase hit data
+		data.hit = false;
+
 		glm::vec4 hitPoint = ray.origin + glm::normalize(ray.direction) * data.hitDistance;
+		
 		auto portal = std::static_pointer_cast<const Portal>(scene.objects[data.hitObjectIndex]);
 
 		glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
 
 		Ray teleportedRay(outPoint, ray.direction);
+
+		data = castRay(teleportedRay, scene);
 	}
 
 	return data;
@@ -101,8 +112,9 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 		#pragma omp parallel for
 		for (int x = 0; x < size.x; x++)
 		{
-			size_t position = ((y * size.x) + x);
+			const size_t position = ((y * size.x) + x);
 
+			// Cast ray into the scene
 			castRayData data = castRay(primaryRays[position], scene);
 
 			if (data.hit) // We hit something, invoke shader and set color

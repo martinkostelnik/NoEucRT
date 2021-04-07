@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include <iostream>
 
 Scene::Scene() :
 	objects(),
@@ -10,6 +11,13 @@ Scene Scene::createBaseScene()
 {
 	Scene scene;
 
+	Portal testingPortal;
+	testingPortal.vertices = { { 300.0f, 100.0f, 400.0f, 1 }, {300.0f, -100.0f, 600.0f, 1 }, { 300.0f, -100.0f, 400.0f, 1 }, { 300.0f, 100.0f, 600.0f, 1 } };
+	testingPortal.indices = { 0, 3, 1, 0, 1, 2 };
+	testingPortal.center = (testingPortal.vertices[0] + testingPortal.vertices[1]) / 2.0f;
+	testingPortal.exit = { 200.0f, 0.0f, -150.0f, 1.0f };
+	scene.objects.push_back(std::make_shared<Portal>(testingPortal));
+	
 	/************************ Objects ************************/
 	Model testingCube(Model::Type::Euclidean);
 	testingCube.vertices = { {-100, -100, -100, 1}, {0, -100, -100, 1}, {0, 100, -100, 1}, {-100, 100, -100, 1},
@@ -32,14 +40,11 @@ Scene Scene::createBaseScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l({ 0, 100, 0 }, 25000, { 0.0f, 0.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l);
-
 	Light l2({ 150, 100, -500 }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l2);
 
-	//Light sun({ 0, -1, 0 }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
-	//lights.push_back(sun);
+	Light sun({ 0, -1, 0 }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun);
 	/*********************************************************/
 
 	return scene;
