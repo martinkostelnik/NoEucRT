@@ -180,8 +180,9 @@ void NoEucEngine::handleMovement()
 	// Collision
 	if (direction.x || direction.z)
 	{
+		scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
 		glm::vec4 worldDirection = scene.mainCamera.toWorld * direction;
-		worldDirection.y = 0.0f;
+		scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
 
 		Ray collisionRay(scene.mainCamera.position, glm::normalize(worldDirection));
 		float hitDistance = 0.0f;
@@ -191,7 +192,8 @@ void NoEucEngine::handleMovement()
 		{
 			if (collisionRay.intersectsAABB(object->boundingBox, &hitDistance))
 			{
-				if (hitDistance <= 5 || distance >= hitDistance) // We found the closest object the camera collides with
+				std::cout << hitDistance << " : " << distance << std::endl;
+				if (hitDistance <= 5 || distance + 5 >= hitDistance) // We found the closest object the camera collides with
 				{
 					if (object->type == Model::Type::Euclidean)
 					{
