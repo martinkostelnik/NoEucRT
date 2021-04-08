@@ -11,9 +11,9 @@ public:
 		Point
 	};
 
-	Light(const glm::vec3 position, const float intensity, const glm::vec3 color, const Type type);
+	Light(const glm::vec4 position, const float intensity, const glm::vec3 color, const Type type);
 
-	const glm::vec3 position;
+	const glm::vec4 position;
 	const float intensity;
 	const glm::vec3 color;
 	const Type type;
