@@ -18,4 +18,6 @@ public:
 	Camera mainCamera;
 
 	static Scene createBaseScene();
+	static Scene createInfiniteTunnelScene();
+	static Scene createPortalScene();
 };

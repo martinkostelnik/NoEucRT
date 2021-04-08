@@ -14,7 +14,7 @@ NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
 	window(sf::VideoMode(width, height, 24), "Non-Euclidean Ray Tracer", sf::Style::None),
-	scene(Scene::createBaseScene()),
+	scene(Scene::createInfiniteTunnelScene()),
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),
@@ -192,7 +192,6 @@ void NoEucEngine::handleMovement()
 		{
 			if (collisionRay.intersectsAABB(object->boundingBox, &hitDistance))
 			{
-				std::cout << hitDistance << " : " << distance << std::endl;
 				if (hitDistance <= 5 || distance + 5 >= hitDistance) // We found the closest object the camera collides with
 				{
 					if (object->type == Model::Type::Euclidean)

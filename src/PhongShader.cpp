@@ -33,7 +33,7 @@ glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::v
 
         case Light::Type::Point:
             lightDirection = scene.lights[i].position - hitPoint;
-            lightAmount = scene.lights[i].intensity * scene.lights[i].color * 1e4f / (4 * glm::pi<float>() * glm::length2(lightDirection));
+            lightAmount = scene.lights[i].intensity * scene.lights[i].color * 2e4f / (4 * glm::pi<float>() * glm::length2(lightDirection));
             break;
         }
 

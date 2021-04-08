@@ -30,12 +30,13 @@ glm::vec3 LambertianShader::getColor(const Ray& ray, const Scene& scene, const g
             
         case Light::Type::Point:
             lightDirection = scene.lights[i].position - hitPoint;
-            lightAmount = scene.lights[i].intensity * scene.lights[i].color * 1e4f / (4 * glm::pi<float>() * glm::length2(lightDirection)) * std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
+            lightAmount = scene.lights[i].intensity * scene.lights[i].color * 2e4f / (4 * glm::pi<float>() * glm::length2(lightDirection));
+            lightAmount *= std::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
             break;
         }
 
         const float bias = 0.001f;
-        Ray shadowRay(hitPoint + hitNormal * bias, lightDirection);
+        Ray shadowRay(hitPoint + hitNormal * bias, glm::normalize(lightDirection));
 
         hitColor += float(shadowRay.seesLight(scene.lights[i], scene)) * hitModel.material.albedo * lightAmount;
     }
