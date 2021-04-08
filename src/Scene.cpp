@@ -40,10 +40,10 @@ Scene Scene::createBaseScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l2({ 150, 100, -500 }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l2({ 150, 100, -500, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l2);
 
-	Light sun({ 0, -1, 0 }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
+	Light sun({ 0, -1, 0, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
 	scene.lights.push_back(sun);
 	/*********************************************************/
 

@@ -49,8 +49,9 @@ void Renderer::precomputeRays()
 
 Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) const
 {
-	castRayData data = { false, 0, nullptr, std::numeric_limits<float>::infinity() };
+	castRayData data = { false, 0, nullptr, {0.0f, 0.0f, 0.0f, 1.0f}, ray };
 	float distance = 0.0f;
+	float minDistance = std::numeric_limits<float>::infinity();
 
 	for (size_t i = 0; i < scene.objects.size(); i++)
 	{
@@ -62,9 +63,9 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) cons
 				{
 					data.hit = true;
 
-					if (distance < data.hitDistance)
+					if (distance < minDistance)
 					{
-						data.hitDistance = distance;
+						minDistance = distance;
 						data.hitObjectIndex = i;
 						data.hitTriangle = &triangle;
 					}
@@ -73,21 +74,25 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) cons
 		}
 	}
 
-	// Portal handling
-	if (data.hit && scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
+	if (data.hit)
 	{
-		// Erase hit data
-		data.hit = false;
+		data.hitPoint = ray.origin + ray.direction * minDistance;
 
-		glm::vec4 hitPoint = ray.origin + glm::normalize(ray.direction) * data.hitDistance;
-		
-		auto portal = std::static_pointer_cast<const Portal>(scene.objects[data.hitObjectIndex]);
+		// Portal handling
+		if (data.hit && scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
+		{
+			// Erase hit data
+			data.hit = false;
 
-		glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
+			auto portal = std::static_pointer_cast<const Portal>(scene.objects[data.hitObjectIndex]);
 
-		Ray teleportedRay(outPoint, ray.direction);
+			glm::vec4 outPoint(data.hitPoint + portal->exit - portal->center);
 
-		data = castRay(teleportedRay, scene);
+			Ray teleportedRay(outPoint, ray.direction);
+			data.ray = teleportedRay;
+
+			data = castRay(teleportedRay, scene);
+		}
 	}
 
 	return data;
@@ -119,7 +124,7 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 
 			if (data.hit) // We hit something, invoke shader and set color
 			{
-				glm::vec3 color = shader.getColor(primaryRays[position], scene, *scene.objects[data.hitObjectIndex], *data.hitTriangle, data.hitDistance);
+				glm::vec3 color = shader.getColor(data.ray, scene, data.hitPoint, *scene.objects[data.hitObjectIndex], *data.hitTriangle);
 				pixels[position * 4] = color.x;	// RED
 				pixels[position * 4 + 1] = color.y; // GREEN
 				pixels[position * 4 + 2] = color.z; // BLUE

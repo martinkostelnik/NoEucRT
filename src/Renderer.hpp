@@ -20,7 +20,8 @@ private:
 		bool hit;
 		size_t hitObjectIndex;
 		const Triangle* hitTriangle;
-		float hitDistance;
+		glm::vec4 hitPoint;
+		Ray ray;
 	};
 
 	castRayData castRay(const Ray& ray, const Scene& scene) const;
