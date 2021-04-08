@@ -193,7 +193,21 @@ void NoEucEngine::handleMovement()
 			{
 				if (hitDistance <= 5 || distance >= hitDistance) // We found the closest object the camera collides with
 				{
-					distance = 0.0f;
+					if (object->type == Model::Type::Euclidean)
+					{
+						distance = 0.0f;
+					}
+					else if (object->type == Model::Type::Portal)
+					{
+						glm::vec4 hitPoint = collisionRay.origin + collisionRay.direction * hitDistance;
+						auto portal = std::static_pointer_cast<const Portal>(object);
+						glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
+
+						distance -= hitDistance;
+						scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { outPoint.x - hitPoint.x, 0, outPoint.z - hitPoint.z }) * scene.mainCamera.toWorld;
+						scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					}
+	
 					break;
 				}
 			}
@@ -208,4 +222,5 @@ void NoEucEngine::handleMovement()
 
 	// Recalculate camera position in world space
 	scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	scene.mainCamera.position.y = 0.0f;
 }
