@@ -84,7 +84,7 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) cons
 			// Erase hit data
 			data.hit = false;
 
-			auto portal = std::static_pointer_cast<const Portal>(scene.objects[data.hitObjectIndex]);
+			auto portal = static_cast<Portal*>(scene.objects[data.hitObjectIndex].get());
 
 			glm::vec4 outPoint(data.hitPoint + portal->exit - portal->center);
 
