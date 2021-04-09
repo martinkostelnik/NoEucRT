@@ -14,7 +14,7 @@ NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
 	window(sf::VideoMode(width, height, 24), "Non-Euclidean Ray Tracer", sf::Style::None),
-	scene(Scene::createInfiniteTunnelScene()),
+	scene(Scene::createPortalScene()),
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),
@@ -201,7 +201,7 @@ void NoEucEngine::handleMovement()
 					else if (object->type == Model::Type::Portal)
 					{
 						glm::vec4 hitPoint = collisionRay.origin + collisionRay.direction * hitDistance;
-						auto portal = std::static_pointer_cast<const Portal>(object);
+						auto portal = static_cast<Portal*>(object.get());
 						glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
 
 						distance -= hitDistance;
