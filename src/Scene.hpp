@@ -13,6 +13,7 @@ class Scene
 public:
 	Scene();
 
+	std::string name;
 	std::vector<std::unique_ptr<Model>> objects;
 	std::vector<Light> lights;
 	Camera mainCamera;
