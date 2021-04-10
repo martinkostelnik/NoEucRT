@@ -53,7 +53,8 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) cons
 	float distance = 0.0f;
 	float minDistance = std::numeric_limits<float>::infinity();
 
-	for (size_t i = 0; i < scene.objects.size(); i++)
+	#pragma omp parallel for private(distance)
+	for (int i = 0; i < scene.objects.size(); i++)
 	{
 		if (ray.intersectsAABB(scene.objects[i]->boundingBox))
 		{

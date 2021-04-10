@@ -28,6 +28,7 @@ private:
 
 	sf::Font fpsFont;
 	sf::Text fpsText;
+	sf::Text sceneName;
 
 	void handleEvents();
 	void handleMovement();

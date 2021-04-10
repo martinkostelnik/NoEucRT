@@ -10,11 +10,17 @@
 #include <glm/gtx/string_cast.hpp>
 /*************************************/
 
+// Skybox
+// Prodluzovaci tunel
+// Rotacni tunel
+// Zmensovaci tunel
+// texturováni
+
 NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
 	window(sf::VideoMode(width, height, 24), "Non-Euclidean Ray Tracer", sf::Style::None),
-	scene(Scene::createPortalScene()),
+	scene(Scene::createInfiniteTunnelScene()),
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),
@@ -27,6 +33,12 @@ NoEucEngine::NoEucEngine() :
 	fpsText.setFont(fpsFont);
 	fpsText.setCharacterSize(18);
 	fpsText.setFillColor(sf::Color::Red);
+
+	sceneName.setFont(fpsFont);
+	sceneName.setCharacterSize(18);
+	sceneName.setPosition(0.0f, 20.0f);
+	sceneName.setFillColor(sf::Color::Red);
+	sceneName.setString(scene.name);
 
 	window.setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
@@ -65,7 +77,7 @@ int NoEucEngine::run()
 		// Process events
 		handleEvents();
 		handleMovement();
-		fpsText.setString(std::to_string(1 / fpsClock.restart().asSeconds()));
+		fpsText.setString("fps: " + std::to_string(1 / fpsClock.restart().asSeconds()));
 
 		// Render image
 		renderer.render(scene, *activeShader, texture);
@@ -74,6 +86,7 @@ int NoEucEngine::run()
 		window.clear();
 		window.draw(renderedImage);
 		window.draw(fpsText);
+		window.draw(sceneName);
 		window.display();
 	}
 

@@ -15,6 +15,8 @@ Scene Scene::createBaseScene()
 {
 	Scene scene;
 
+	scene.name = "Basic scene";
+
 	Portal testingPortal;
 	testingPortal.vertices = { { 300.0f, 100.0f, 400.0f, 1 }, {300.0f, -100.0f, 600.0f, 1 }, { 300.0f, -100.0f, 400.0f, 1 }, { 300.0f, 100.0f, 600.0f, 1 } };
 	testingPortal.indices = { 0, 3, 1, 0, 1, 2 };
@@ -57,6 +59,8 @@ Scene Scene::createBaseScene()
 Scene Scene::createPortalScene()
 {
 	Scene scene;
+
+	scene.name = "Simple portal scene";
 
 	/************************ Objects ************************/
 	Model floor1(Model::Type::Euclidean);
@@ -165,6 +169,8 @@ Scene Scene::createPortalScene()
 Scene Scene::createInfiniteTunnelScene()
 {
 	Scene scene;
+
+	scene.name = "Infinite tunnel";
 
 	/************************ Objects ************************/
 	Model floor(Model::Type::Euclidean);
