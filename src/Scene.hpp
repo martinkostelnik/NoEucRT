@@ -7,6 +7,7 @@
 #include "Model.hpp"
 #include "Portal.hpp"
 #include "Light.hpp"
+#include "Skybox.hpp"
 
 class Scene
 {
@@ -17,6 +18,7 @@ public:
 	std::vector<std::unique_ptr<Model>> objects;
 	std::vector<Light> lights;
 	Camera mainCamera;
+	Skybox skybox;
 
 	static Scene createBaseScene();
 	static Scene createPortalScene();

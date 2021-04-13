@@ -7,7 +7,8 @@
 
 Scene::Scene() :
 	objects(),
-	mainCamera()
+	mainCamera(),
+	skybox("skybox.png")
 {
 }
 
