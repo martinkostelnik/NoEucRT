@@ -20,7 +20,7 @@ NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
 	window(sf::VideoMode(width, height, 24), "Non-Euclidean Ray Tracer", sf::Style::None),
-	scene(Scene::createInfiniteTunnelScene()),
+	scene(Scene::createBaseScene()),
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),

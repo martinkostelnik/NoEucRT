@@ -132,9 +132,10 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 			}
 			else // We hit nothing
 			{
-				pixels[position * 4] = 0; // RED
-				pixels[position * 4 + 1] = 191; // GREEN
-				pixels[position * 4 + 2] = 255; // BLUE
+				sf::Color color = scene.skybox.getColor(glm::normalize(data.ray.direction));
+				pixels[position * 4] = color.r; // RED
+				pixels[position * 4 + 1] = color.g; // GREEN
+				pixels[position * 4 + 2] = color.b; // BLUE
 			}
 		}
 	}
