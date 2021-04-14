@@ -23,5 +23,6 @@ add_executable(NoEucRT src/main.cpp
 			   src/Shader.hpp src/Shader.cpp
 			   src/LambertianShader.hpp src/LambertianShader.cpp
 			   src/PhongShader.hpp src/PhongShader.cpp
-			   src/Material.hpp src/Material.cpp)
+			   src/Material.hpp src/Material.cpp
+			   src/Skybox.hpp src/Skybox.cpp)
 target_link_libraries(NoEucRT sfml-graphics sfml-window glm::glm)
