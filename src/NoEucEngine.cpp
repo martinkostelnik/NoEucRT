@@ -201,31 +201,39 @@ void NoEucEngine::handleMovement()
 		float hitDistance = 0.0f;
 
 		// Test camera collision against each object in the scene
-		for (const auto& object : scene.objects)
-		{
-			if (collisionRay.intersectsAABB(object->boundingBox, &hitDistance))
+		[&] {
+			for (const auto& object : scene.objects)
 			{
-				if (hitDistance <= 5 || distance + 5 >= hitDistance) // We found the closest object the camera collides with
+				if (collisionRay.intersectsAABB(object->boundingBox))
 				{
-					if (object->type == Model::Type::Euclidean)
+					for (const auto& triangle : object->triangles)
 					{
-						distance = 0.0f;
-					}
-					else if (object->type == Model::Type::Portal)
-					{
-						glm::vec4 hitPoint = collisionRay.origin + collisionRay.direction * hitDistance;
-						auto portal = static_cast<Portal*>(object.get());
-						glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
+						if (collisionRay.intersectsTriangle(triangle, hitDistance))
+						{
+							if (hitDistance <= 5 || distance + 5 >= hitDistance) // We found the closest triangle the camera collides with
+							{
+								if (object->type == Model::Type::Euclidean)
+								{
+									distance = 0.0f;
+								}
+								else if (object->type == Model::Type::Portal)
+								{
+									glm::vec4 hitPoint = collisionRay.origin + collisionRay.direction * hitDistance;
+									auto portal = static_cast<Portal*>(object.get());
+									glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
 
-						distance -= hitDistance;
-						scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { outPoint.x - hitPoint.x, 0, outPoint.z - hitPoint.z }) * scene.mainCamera.toWorld;
-						scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+									distance -= hitDistance;
+									scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { outPoint.x - hitPoint.x, 0, outPoint.z - hitPoint.z }) * scene.mainCamera.toWorld;
+									scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+								}
+
+								return;
+							}
+						}
 					}
-	
-					break;
 				}
 			}
-		}
+		}();
 	}
 	
 	// Move camera
