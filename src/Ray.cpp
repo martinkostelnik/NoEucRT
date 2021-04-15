@@ -125,6 +125,9 @@ bool Ray::seesLight(const Light& light, const Scene& scene) const
 
     for (const auto& object : scene.objects)
     {
+        if (object->type == Model::Type::WarpedTunnel)
+            continue;
+
         if (intersectsAABB(object->boundingBox))
         {
             for (const auto& triangle : object->triangles)

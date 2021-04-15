@@ -14,7 +14,8 @@ public:
 	enum class Type
 	{
 		Euclidean,
-		Portal
+		Portal,
+		WarpedTunnel
 	};
 
 	Model();

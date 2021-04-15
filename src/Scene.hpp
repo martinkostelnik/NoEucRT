@@ -5,7 +5,6 @@
 
 #include "Camera.hpp"
 #include "Model.hpp"
-#include "Portal.hpp"
 #include "Light.hpp"
 #include "Skybox.hpp"
 
