@@ -17,6 +17,7 @@ add_executable(NoEucRT src/main.cpp
 			   src/Ray.hpp src/Ray.cpp
 			   src/Model.hpp src/Model.cpp
 			   src/Portal.hpp src/Portal.cpp
+			   src/WarpedTunnel.hpp src/WarpedTunnel.cpp
 			   src/Triangle.hpp src/Triangle.cpp
 			   src/AABB.hpp src/AABB.cpp
 			   src/Light.hpp src/Light.cpp

@@ -24,7 +24,7 @@ private:
 		Ray ray;
 	};
 
-	castRayData castRay(const Ray& ray, const Scene& scene) const;
+	castRayData castRay(const Ray& ray, const Scene& scene, const bool warped = false, const glm::vec4& prevDirection = { 0.0f, 0.0f, 0.0f, 0.0f }) const;
 
 	const size_t width;
 	const size_t height;

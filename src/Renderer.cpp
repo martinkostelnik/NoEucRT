@@ -2,6 +2,7 @@
 
 #include "Ray.hpp"
 #include "Portal.hpp"
+#include "WarpedTunnel.hpp"
 
 /************ DELETE THIS ************/
 #include <iostream>
@@ -47,7 +48,7 @@ void Renderer::precomputeRays()
 	}
 }
 
-Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) const
+Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, const bool warped, const glm::vec4& prevDirection) const
 {
 	castRayData data = { false, 0, nullptr, {0.0f, 0.0f, 0.0f, 1.0f}, ray };
 	float distance = 0.0f;
@@ -80,7 +81,7 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) cons
 		data.hitPoint = ray.origin + ray.direction * minDistance;
 
 		// Portal handling
-		if (data.hit && scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
+		if (scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
 		{
 			// Erase hit data
 			data.hit = false;
@@ -93,6 +94,31 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene) cons
 			data.ray = teleportedRay;
 
 			data = castRay(teleportedRay, scene);
+		}
+		else if (scene.objects[data.hitObjectIndex]->type == Model::Type::WarpedTunnel)
+		{
+			const float bias = 1e-4f;
+
+			if (!warped) // Ray entering warping tunnel
+			{
+				data.hit = false;
+
+				auto tunnel = static_cast<WarpedTunnel*>(scene.objects[data.hitObjectIndex].get());
+
+				float d = glm::dot(tunnel->direction, ray.direction);
+				glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(ray.direction, tunnel->direction, 0.5)) : warpedDirection = glm::normalize(glm::mix(ray.direction, -tunnel->direction, 0.5));
+
+				Ray warpedRay(data.hitPoint + ray.direction * bias, warpedDirection);
+
+				data = castRay(warpedRay, scene, true, ray.direction);
+			}
+			else // Ray leaving warping tunnel
+			{
+				data.hit = false;
+				Ray leavingRay(data.hitPoint + ray.direction * bias, prevDirection);
+
+				data = castRay(leavingRay, scene);
+			}
 		}
 	}
 

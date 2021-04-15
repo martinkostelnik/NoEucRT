@@ -4,13 +4,13 @@
 
 #include "LambertianShader.hpp"
 #include "PhongShader.hpp"
+#include "Portal.hpp"
 
 /************ DELETE THIS ************/
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 /*************************************/
 
-// Skybox
 // Prodluzovaci tunel
 // Rotacni tunel
 // Zmensovaci tunel
