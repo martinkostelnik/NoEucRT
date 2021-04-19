@@ -36,7 +36,7 @@ void Model::assembleTriangles()
 	}
 }
 
-void Model::constructBVH()
+void Model::buildAABB()
 {
 	for (const auto& vertex : vertices)
 	{

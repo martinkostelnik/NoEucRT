@@ -25,8 +25,9 @@ private:
 	Renderer renderer;
 
 	sf::Clock movementClock;
+	sf::Clock fpsClock;
 
-	sf::Font fpsFont;
+	sf::Font font;
 	sf::Text fpsText;
 	sf::Text sceneName;
 
