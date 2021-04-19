@@ -210,15 +210,18 @@ void NoEucEngine::handleMovement()
 
 					scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
 					glm::vec4 localDirection = glm::inverse(scene.mainCamera.toWorld) * tunnel->direction;
-					scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
+					
 					
 					float d = glm::dot(localDirection, direction);
 					glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(direction, localDirection, tunnel->intensity)) : glm::normalize(glm::mix(direction, -localDirection, tunnel->intensity));
 
 					direction = glm::normalize(warpedDirection);
+					collisionRay.direction = scene.mainCamera.toWorld * direction;
 
 					float magnitude = glm::abs(glm::dot(direction, localDirection));
 					distance = (distance * magnitude / tunnel->intensity) + (distance * (1 - magnitude));
+
+					scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
 					}
 
 				if (collisionRay.intersectsAABB(object->boundingBox))
