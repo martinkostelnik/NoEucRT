@@ -5,13 +5,13 @@
 #include "LambertianShader.hpp"
 #include "PhongShader.hpp"
 #include "Portal.hpp"
+#include "WarpedTunnel.hpp"
 
 /************ DELETE THIS ************/
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 /*************************************/
 
-// Prodluzovaci tunel
 // Rotacni tunel
 // Zmensovaci tunel
 // texturováni
@@ -24,17 +24,18 @@ NoEucEngine::NoEucEngine() :
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),
-	movementClock()
+	movementClock(),
+	fpsClock()
 {
 	texture.create(width, height);
 	renderedImage.setTexture(texture);
 
-	fpsFont.loadFromFile("arial.ttf");
-	fpsText.setFont(fpsFont);
+	font.loadFromFile("arial.ttf");
+	fpsText.setFont(font);
 	fpsText.setCharacterSize(18);
 	fpsText.setFillColor(sf::Color::Red);
 
-	sceneName.setFont(fpsFont);
+	sceneName.setFont(font);
 	sceneName.setCharacterSize(18);
 	sceneName.setPosition(0.0f, 20.0f);
 	sceneName.setFillColor(sf::Color::Red);
@@ -63,14 +64,12 @@ int NoEucEngine::run()
 		model->assembleTriangles();
 
 		// Construst BVH on model
-		model->constructBVH();
+		model->buildAABB();
 	}
 
 	// Ray preprocessing, this function precomputes all ray directions in camera space.
 	// Rays are then stored sequentially in a vector for simd support.
 	renderer.precomputeRays();
-
-	sf::Clock fpsClock;
 
 	while (window.isOpen())
 	{
@@ -204,6 +203,24 @@ void NoEucEngine::handleMovement()
 		[&] {
 			for (const auto& object : scene.objects)
 			{
+				// Check if camera is inside warped tunnel
+				if (object->type == Model::Type::WarpedTunnel && scene.mainCamera.isInsideAABB(object->boundingBox))
+				{
+					auto tunnel = static_cast<WarpedTunnel*>(object.get());
+
+					scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
+					glm::vec4 localDirection = glm::inverse(scene.mainCamera.toWorld) * tunnel->direction;
+					scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
+					
+					float d = glm::dot(localDirection, direction);
+					glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(direction, localDirection, tunnel->intensity)) : glm::normalize(glm::mix(direction, -localDirection, tunnel->intensity));
+
+					direction = glm::normalize(warpedDirection);
+
+					float magnitude = glm::abs(glm::dot(direction, localDirection));
+					distance = (distance * magnitude / tunnel->intensity) + (distance * (1 - magnitude));
+					}
+
 				if (collisionRay.intersectsAABB(object->boundingBox))
 				{
 					for (const auto& triangle : object->triangles)

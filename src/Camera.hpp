@@ -18,4 +18,5 @@ public:
 	glm::vec4 lookAt;
 
 	void reset();
+	bool isInsideAABB(const AABB& aabb) const;
 };

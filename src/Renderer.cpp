@@ -106,7 +106,7 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 				auto tunnel = static_cast<WarpedTunnel*>(scene.objects[data.hitObjectIndex].get());
 
 				float d = glm::dot(tunnel->direction, ray.direction);
-				glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(ray.direction, tunnel->direction, 0.5)) : warpedDirection = glm::normalize(glm::mix(ray.direction, -tunnel->direction, 0.5));
+				glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(ray.direction, tunnel->direction, tunnel->intensity)) : glm::normalize(glm::mix(ray.direction, -tunnel->direction, tunnel->intensity));
 
 				Ray warpedRay(data.hitPoint + ray.direction * bias, warpedDirection);
 
@@ -137,6 +137,32 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 		primaryRays[i].direction = scene.mainCamera.toWorld * precomputedRays[i].direction;
 	}
 
+	// Check if we are in warped tunnel
+	// If yes, we have to recompute ray directions
+	bool warped = false;
+	glm::vec4 preWarped(0.0f);
+	#pragma omp parallel for
+	for (int i = 0; i < scene.objects.size(); i++)
+	{
+		if (scene.objects[i]->type == Model::Type::WarpedTunnel)
+		{
+			if (scene.mainCamera.isInsideAABB(scene.objects[i]->boundingBox))
+			{
+				warped = true;
+				auto tunnel = static_cast<WarpedTunnel*>(scene.objects[i].get());
+
+				#pragma omp parallel for
+				for (int j = 0; j < primaryRays.size(); j++)
+				{
+					float d = glm::dot(tunnel->direction, primaryRays[j].direction);
+					primaryRays[j].direction = d > 0.0f ? glm::normalize(glm::mix(primaryRays[j].direction, tunnel->direction, tunnel->intensity)) : glm::normalize(glm::mix(primaryRays[j].direction, -tunnel->direction, tunnel->intensity));
+				}
+
+				break;
+			}
+		}
+	}
+
 	// Render an image
 	#pragma omp parallel for
 	for (int y = 0; y < size.y; y++)
@@ -147,7 +173,15 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 			const size_t position = ((y * size.x) + x);
 
 			// Cast ray into the scene
-			castRayData data = castRay(primaryRays[position], scene);
+			castRayData data;
+			if (warped)
+			{
+				data = castRay(primaryRays[position], scene, warped, scene.mainCamera.toWorld * precomputedRays[position].direction);
+			}
+			else
+			{
+				data = castRay(primaryRays[position], scene);
+			}
 
 			if (data.hit) // We hit something, invoke shader and set color
 			{

@@ -23,7 +23,7 @@ public:
 	Model(const std::string fileName);
 
 	void assembleTriangles();
-	void constructBVH();
+	void buildAABB();
 	void loadFromFile(const std::string fileName);
 
 	std::vector<glm::vec4> vertices;
