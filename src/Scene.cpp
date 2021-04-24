@@ -19,7 +19,7 @@
 Scene::Scene() :
 	objects(),
 	mainCamera(),
-	skybox("skybox.png"),
+	skybox("resources/skybox.png"),
 	floorLevel(0.0f)
 {
 }
