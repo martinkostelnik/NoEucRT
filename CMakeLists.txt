@@ -13,8 +13,6 @@ if (MSVC)
 	add_compile_options(/openmp:experimental /O2 /Ob2 /Ot)
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_executable(NoEucRT src/main.cpp
 			   src/NoEucEngine.hpp src/NoEucEngine.cpp
 			   src/MovementHandler.hpp src/MovementHandler.cpp
@@ -36,3 +34,15 @@ add_executable(NoEucRT src/main.cpp
 			   src/Material.hpp src/Material.cpp
 			   src/Skybox.hpp src/Skybox.cpp)
 target_link_libraries(NoEucRT sfml-graphics sfml-window glm::glm)
+				
+add_custom_command(
+        TARGET NoEucRT POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/resources/
+                ${CMAKE_CURRENT_BINARY_DIR}/Release/resources/)
+				
+add_custom_command(
+        TARGET NoEucRT POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/resources/
+                ${CMAKE_CURRENT_BINARY_DIR}/resources/)
