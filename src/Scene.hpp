@@ -26,4 +26,7 @@ public:
 	static Scene createShortTunnelScene();
 	static Scene createLongTunnelScene();
 	static Scene createShrinkScene();
+	static Scene createRotatingTunnelScene();
+
+	void preProcessScene();
 };

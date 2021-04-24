@@ -9,4 +9,5 @@ public:
 
 	glm::vec4 direction;
 	float maxRotation;
+	float length;
 };

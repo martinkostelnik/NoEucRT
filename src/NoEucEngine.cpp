@@ -1,7 +1,6 @@
 #include "NoEucEngine.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/vector_angle.hpp>
 
 #include "LambertianShader.hpp"
 #include "PhongShader.hpp"
@@ -15,10 +14,6 @@
 #include <glm/gtx/string_cast.hpp>
 /*************************************/
 
-// Rotacni tunel
-// Zmensovaci tunel
-// texturováni
-
 NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
@@ -27,8 +22,8 @@ NoEucEngine::NoEucEngine() :
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),
-	movementClock(),
-	fpsClock()
+	fpsClock(),
+	movementHandler()
 {
 	texture.create(width, height);
 	renderedImage.setTexture(texture);
@@ -47,28 +42,16 @@ NoEucEngine::NoEucEngine() :
 	window.setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 
-	shaders = { std::make_shared<LambertianShader>(LambertianShader()), std::make_shared<PhongShader>(PhongShader()) };
+	shaders.push_back(std::unique_ptr<Shader>(new LambertianShader()));
+	shaders.push_back(std::unique_ptr<Shader>(new PhongShader()));
 	shaderIndex = 0;
-	activeShader = shaders[shaderIndex];
+	activeShader = shaders[shaderIndex].get();
 }
 
 int NoEucEngine::run()
 {
-	// Model preprocessing
-	for (auto& model : scene.objects)
-	{
-		// Transform every vertex to world space
-		for (auto& vertex : model->vertices)
-		{
-			vertex = model->toWorld * vertex;
-		}
-
-		// Primitive assembly
-		model->assembleTriangles();
-
-		// Construst BVH on model
-		model->buildAABB();
-	}
+	// Preprocess scene
+	scene.preProcessScene();
 
 	// Ray preprocessing, this function precomputes all ray directions in camera space.
 	// Rays are then stored sequentially in a vector for simd support.
@@ -78,7 +61,7 @@ int NoEucEngine::run()
 	{
 		// Process events
 		handleEvents();
-		handleMovement();
+		movementHandler.handleMovement(window, scene, scene.mainCamera);
 		fpsText.setString("fps: " + std::to_string(1 / fpsClock.restart().asSeconds()));
 
 		// Render image
@@ -114,11 +97,53 @@ void NoEucEngine::handleEvents()
 			else if (event.key.code == sf::Keyboard::Q)
 			{
 				shaderIndex = shaderIndex == 0 ? 1 : 0;
-				activeShader = shaders[shaderIndex];
+				activeShader = shaders[shaderIndex].get();
 			}
 			else if (event.key.code == sf::Keyboard::E)
 			{
 				scene.mainCamera.reset();
+			}
+			else if (event.key.code == sf::Keyboard::Num1)
+			{
+				scene = Scene::createBaseScene();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
+			}
+			else if (event.key.code == sf::Keyboard::Num2)
+			{
+				scene = Scene::createPortalScene();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
+			}
+			else if (event.key.code == sf::Keyboard::Num3)
+			{
+				scene = Scene::createInfiniteTunnelScene();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
+			}
+			else if (event.key.code == sf::Keyboard::Num4)
+			{
+				scene = Scene::createShortTunnelScene();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
+			}
+			else if (event.key.code == sf::Keyboard::Num5)
+			{
+				scene = Scene::createLongTunnelScene();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
+			}
+			else if (event.key.code == sf::Keyboard::Num6)
+			{
+				scene = Scene::createShrinkScene();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
+			}
+			else if (event.key.code == sf::Keyboard::Num7)
+			{
+				scene = Scene::createRotatingTunnelScene();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
 			}
 			break;
 
@@ -126,180 +151,4 @@ void NoEucEngine::handleEvents()
 			break;
 		}
 	}
-}
-
-void NoEucEngine::handleMovement()
-{
-	sf::Time elapsedTime = movementClock.restart();
-
-	// Rotation
-	sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-
-	// Get distance the mouse has moved in both directions
-	float deltaX = mousePosition.x - width * 0.5;
-	float deltaY = mousePosition.y - height * 0.5;
-
-	// Save the previous rotation
-	float tmpRotation = scene.mainCamera.Xrotation;
-	scene.mainCamera.Xrotation -= deltaY;
-
-	// Resolve maximum rotation around the X axis
-	// Maximum rotation is set to 90 degrees
-	if (scene.mainCamera.Xrotation > 90.0)
-	{
-		scene.mainCamera.Xrotation = 90.0;
-		deltaY = -90.0 + tmpRotation;
-	}
-	else if (scene.mainCamera.Xrotation < -90.0)
-	{
-		scene.mainCamera.Xrotation = -90.0;
-		deltaY = 90.0 + tmpRotation;
-	}
-
-	// Rotation around X axis
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -glm::radians(deltaY), { 1, 0, 0 });
-
-	// Rotation around Y axis
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, -glm::radians(deltaX), { 0, 1, 0 });
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
-
-	// Reset mouse position to the middle of the window
-	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
-
-	// Recalculate the lookAt vector
-	scene.mainCamera.lookAt = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-
-	// Movement
-	float distance = elapsedTime.asSeconds() * scene.mainCamera.speed;
-	glm::vec4 direction(0.0f);
-
-	// Keyboard control
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-	{
-		direction.z += -1.0f;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	{
-		direction.x += -1.0f;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-	{
-		direction.z += 1.0f;
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	{
-		direction.x += 1.0f;
-	}
-
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
-	glm::vec4 worldDirection = scene.mainCamera.toWorld * direction;
-	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
-
-	bool inside = false;
-
-	// Collision
-	if (direction.x || direction.z)
-	{
-		Ray collisionRay(scene.mainCamera.position, glm::normalize(worldDirection));
-		float hitDistance = 0.0f;
-
-		// Test camera collision against each object in the scene
-		[&] {
-			for (const auto& object : scene.objects)
-			{
-				// Check if camera is inside warped tunnel
-				if (scene.mainCamera.isInsideAABB(object->boundingBox))
-				{
-					inside = true;
-
-					if (object->type == Model::Type::WarpedTunnel)
-					{
-						auto tunnel = static_cast<WarpedTunnel*>(object.get());
-
-						scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
-						glm::vec4 localDirection = glm::inverse(scene.mainCamera.toWorld) * tunnel->moveDirection;
-
-						float d = glm::dot(localDirection, direction);
-						glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(direction, localDirection, tunnel->intensity)) : glm::normalize(glm::mix(direction, -localDirection, tunnel->intensity));
-
-						direction = glm::normalize(warpedDirection);
-						collisionRay.direction = scene.mainCamera.toWorld * direction;
-
-						float magnitude = glm::abs(glm::dot(direction, localDirection));
-						distance = (distance * magnitude / (1 - tunnel->intensity)) + (distance * (1 - magnitude));
-
-						scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
-					}
-					else if (object->type == Model::Type::ShrinkTunnel)
-					{
-						auto tunnel = static_cast<ShrinkTunnel*>(object.get());
-						float a = distance * glm::dot(glm::normalize(glm::vec2(worldDirection.x, worldDirection.z)), glm::normalize(glm::vec2(tunnel->direction.x, tunnel->direction.z)));
-						
-						float f = a / tunnel->length;
-
-						float yDistance = (scene.mainCamera.position.y - scene.floorLevel) * f * tunnel->finalSize;
-						collisionRay.direction.y += -yDistance;
-						collisionRay.direction = glm::normalize(collisionRay.direction);
-
-						scene.mainCamera.speed *= 1 - yDistance / (scene.mainCamera.position.y - scene.floorLevel);
-
-						scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * scene.mainCamera.toWorld;
-						scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-					}
-				}
-
-				if (collisionRay.intersectsAABB(object->boundingBox))
-				{
-					for (const auto& triangle : object->triangles)
-					{
-						if (collisionRay.intersectsTriangle(triangle, hitDistance))
-						{
-							if (hitDistance <= 5 || distance + 5 >= hitDistance) // We found the closest triangle the camera collides with
-							{
-								if (object->type == Model::Type::Euclidean)
-								{
-									distance = 0.0f;
-								}
-								else if (object->type == Model::Type::Portal)
-								{
-									glm::vec4 hitPoint = collisionRay.origin + collisionRay.direction * hitDistance;
-									auto portal = static_cast<Portal*>(object.get());
-									glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
-
-									distance -= hitDistance;
-									scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { outPoint.x - hitPoint.x, outPoint.y - hitPoint.y, outPoint.z - hitPoint.z }) * scene.mainCamera.toWorld;
-									scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-								}
-								else if (object->type == Model::Type::ShrinkTunnel)
-								{
-									auto tunnel = static_cast<ShrinkTunnel*>(object.get());
-									float distanceInTunnel = inside ? hitDistance : distance - hitDistance;
-
-									float a = distanceInTunnel * glm::dot(glm::normalize(glm::vec2(worldDirection.x, worldDirection.z)), glm::normalize(glm::vec2(tunnel->direction.x, tunnel->direction.z)));
-									float f = a / tunnel->length;
-
-									float yDistance = (scene.mainCamera.position.y - scene.floorLevel) * f * tunnel->finalSize;
-
-									scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * scene.mainCamera.toWorld;
-									scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-								}
-
-								return;
-							}
-						}
-					}
-				}
-			}
-		}();
-	}
-	
-	// Move camera
-	scene.mainCamera.toWorld = glm::translate(scene.mainCamera.toWorld,
-											 { direction.x * distance,
-											   direction.z * glm::sin(glm::radians(scene.mainCamera.Xrotation)) * distance,
-											   direction.z * glm::cos(glm::radians(scene.mainCamera.Xrotation)) * distance});
-
-	// Recalculate camera position in world space
-	scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
