@@ -1,3 +1,14 @@
+/**
+ * @file LambertianShader.hpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Declaration file of the LambertianShader class. This class implements Lambertian shading.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #pragma once
 
 #include "Shader.hpp"

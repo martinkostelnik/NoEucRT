@@ -1,3 +1,15 @@
+/**
+ * @file MovementHandler.hpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Declaration file of the MovementHandler class. The engine uses a single instance of this class
+ * to handle movement of the camera in the scene and through non-euclidean objects.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #pragma once
 
 #include <SFML/Graphics.hpp>

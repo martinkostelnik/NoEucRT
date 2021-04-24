@@ -1,7 +1,16 @@
-#include "Skybox.hpp"
-#include <iostream>
+/**
+ * @file Skybox.cpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Implementation file of the Skybox class.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 
-// 700 x 525 (175 x 175 squares)
+#include "Skybox.hpp"
+
 Skybox::Skybox(const std::string fileName)
 {
     cubeMap.loadFromFile(fileName);
