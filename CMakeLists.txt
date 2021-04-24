@@ -15,6 +15,7 @@ endif()
 
 add_executable(NoEucRT src/main.cpp
 			   src/NoEucEngine.hpp src/NoEucEngine.cpp
+			   src/MovementHandler.hpp src/MovementHandler.cpp
 			   src/Renderer.hpp src/Renderer.cpp
 			   src/Camera.hpp src/Camera.cpp
 			   src/Scene.hpp src/Scene.cpp

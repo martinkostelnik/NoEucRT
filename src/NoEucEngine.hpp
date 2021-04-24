@@ -6,6 +6,7 @@
 #include "Renderer.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
+#include "MovementHandler.hpp"
 
 class NoEucEngine
 {
@@ -24,7 +25,8 @@ private:
 	sf::RenderWindow window;
 	Renderer renderer;
 
-	sf::Clock movementClock;
+	MovementHandler movementHandler;
+
 	sf::Clock fpsClock;
 
 	sf::Font font;
@@ -32,9 +34,8 @@ private:
 	sf::Text sceneName;
 
 	void handleEvents();
-	void handleMovement();
 
-	std::vector<std::shared_ptr<Shader>> shaders;
+	std::vector<std::unique_ptr<Shader>> shaders;
 	size_t shaderIndex;
-	std::shared_ptr<Shader> activeShader;
+	Shader* activeShader;
 };
