@@ -20,11 +20,6 @@
 #include "ShrinkTunnel.hpp"
 #include "RotationTunnel.hpp"
 
-/************ DELETE THIS ************/
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-/*************************************/
-
 NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
