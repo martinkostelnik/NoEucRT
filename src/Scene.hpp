@@ -18,8 +18,11 @@ public:
 	std::vector<Light> lights;
 	Camera mainCamera;
 	Skybox skybox;
+	float floorLevel;
 
 	static Scene createBaseScene();
 	static Scene createPortalScene();
 	static Scene createInfiniteTunnelScene();
+	static Scene createShortTunnelScene();
+	static Scene createLongTunnelScene();
 };

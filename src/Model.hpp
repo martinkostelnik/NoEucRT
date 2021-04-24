@@ -15,7 +15,9 @@ public:
 	{
 		Euclidean,
 		Portal,
-		WarpedTunnel
+		WarpedTunnel,
+		RotationTunnel,
+		ShrinkTunnel
 	};
 
 	Model();
