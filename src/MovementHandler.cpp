@@ -174,15 +174,18 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 
 				float yDistance = (camera.position.y - scene.floorLevel) * shrinkFraction * tunnel->finalSize;
 
-				// FIX THIS
-				collisionRay.direction.y += -yDistance;
-				collisionRay.direction = glm::normalize(collisionRay.direction);
+				// Test for collision, this has to been done here before actual collision checks
+				if (camera.position.y - yDistance < tunnel->ceiling - 5 && camera.position.y - yDistance > scene.floorLevel + 5)
+				{
+					// Change speed appropriately to size
+					camera.speed *= 1 - yDistance / (camera.position.y - scene.floorLevel);
 
-				// Change speed appropriately to size
-				camera.speed *= 1 - yDistance / (camera.position.y - scene.floorLevel);
-
-				camera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * camera.toWorld;
-				camera.position = camera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					camera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * camera.toWorld;
+					camera.position = camera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				}
+				else {
+					distance = 0.0f;
+				}
 			}
 			else if (object->type == Model::Type::RotationTunnel) // We are inside rotation tunnel
 			{
