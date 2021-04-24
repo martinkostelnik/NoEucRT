@@ -405,6 +405,7 @@ Scene Scene::createShrinkScene()
 	tunnel->direction = { 0.0f, 0.0f, -1.0f, 0.0f };
 	tunnel->finalSize = 0.5f;
 	tunnel->length = glm::distance(tunnel->vertices[0], tunnel->vertices[4]);
+	tunnel->ceiling = 105;
 	scene.objects.push_back(std::move(tunnel));
 	/*********************************************************/
 

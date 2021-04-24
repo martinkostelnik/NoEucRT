@@ -22,4 +22,5 @@ public:
 	glm::vec4 direction;
 	float finalSize;
 	float length;
+	float ceiling;
 };
