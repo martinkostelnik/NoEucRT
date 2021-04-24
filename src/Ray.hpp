@@ -1,3 +1,15 @@
+/**
+ * @file Ray.hpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Declaration file of the Ray class. Rays are the core of the ray-tracing method and
+ * they are also used in collision-detection.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #pragma once
 
 #include <glm/glm.hpp>

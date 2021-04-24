@@ -1,9 +1,15 @@
-#include "Scene.hpp"
+/**
+ * @file Scene.cpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Implementation file of the Scene class.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 
-/************ DELETE THIS ************/
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-/*************************************/
+#include "Scene.hpp"
 
 #include "Portal.hpp"
 #include "WarpedTunnel.hpp"

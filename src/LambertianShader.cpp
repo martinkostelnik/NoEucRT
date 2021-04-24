@@ -1,3 +1,14 @@
+/**
+ * @file LambertianShader.cpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Implementation file of the LambertianShader class, which is derived from Shader class.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #include "LambertianShader.hpp"
 
 #include <glm/gtx/norm.hpp>

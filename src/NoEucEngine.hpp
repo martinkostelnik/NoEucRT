@@ -1,3 +1,16 @@
+/**
+ * @file NoEucEngine.hpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Declaration file of the NoEucEngine class. This is the class that combines all the
+ * other classes and suits as an interface between them. It also handles UI, which is very simple,
+ * consisting only of two lines of texts. Lastly it handles system events.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #pragma once
 
 #include <SFML/Graphics.hpp>

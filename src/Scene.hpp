@@ -1,3 +1,16 @@
+/**
+ * @file Scene.hpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Declaration file of the Scene class. This class holds all the objects, lights and 
+ * other neccessary things required for rendering. It also contains static methods to create sample scenes.
+ * Class is also responsible for pre-processing related to optimalizations.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #pragma once
 
 #include <vector>

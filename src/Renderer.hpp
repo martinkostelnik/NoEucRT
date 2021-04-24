@@ -1,3 +1,15 @@
+/**
+ * @file Renderer.hpp
+ * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
+ * @brief Declaration file of the Renderer class. Instance of this class is used to produce an image
+ * using the ray-tracing method. It also defined ray behaviour in non-euclidean spaces.
+ * @version 1.0
+ * @date 2021-05-12
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
