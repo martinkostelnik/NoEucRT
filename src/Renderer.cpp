@@ -80,6 +80,8 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 	{
 		data.hitPoint = ray.origin + ray.direction * minDistance;
 
+		const float bias = 1e-4f;
+
 		// Portal handling
 		if (scene.objects[data.hitObjectIndex]->type == Model::Type::Portal)
 		{
@@ -97,16 +99,14 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 		}
 		else if (scene.objects[data.hitObjectIndex]->type == Model::Type::WarpedTunnel)
 		{
-			const float bias = 1e-4f;
-
 			if (!warped) // Ray entering warping tunnel
 			{
 				data.hit = false;
 
 				auto tunnel = static_cast<WarpedTunnel*>(scene.objects[data.hitObjectIndex].get());
 
-				float d = glm::dot(tunnel->direction, ray.direction);
-				glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(ray.direction, tunnel->direction, tunnel->intensity)) : glm::normalize(glm::mix(ray.direction, -tunnel->direction, tunnel->intensity));
+				float d = glm::dot(tunnel->warpDirection, ray.direction);
+				glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(ray.direction, tunnel->warpDirection, tunnel->intensity)) : glm::normalize(glm::mix(ray.direction, -tunnel->warpDirection, tunnel->intensity));
 
 				Ray warpedRay(data.hitPoint + ray.direction * bias, warpedDirection);
 
@@ -119,6 +119,13 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 
 				data = castRay(leavingRay, scene);
 			}
+		}
+		else if (scene.objects[data.hitObjectIndex]->type == Model::Type::ShrinkTunnel || scene.objects[data.hitObjectIndex]->type == Model::Type::RotationTunnel)
+		{
+			data.hit = false;
+			Ray r(data.hitPoint + ray.direction * bias, ray.direction);
+
+			data = castRay(r, scene);
 		}
 	}
 
@@ -154,8 +161,8 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 				#pragma omp parallel for
 				for (int j = 0; j < primaryRays.size(); j++)
 				{
-					float d = glm::dot(tunnel->direction, primaryRays[j].direction);
-					primaryRays[j].direction = d > 0.0f ? glm::normalize(glm::mix(primaryRays[j].direction, tunnel->direction, tunnel->intensity)) : glm::normalize(glm::mix(primaryRays[j].direction, -tunnel->direction, tunnel->intensity));
+					float d = glm::dot(tunnel->warpDirection, primaryRays[j].direction);
+					primaryRays[j].direction = d > 0.0f ? glm::normalize(glm::mix(primaryRays[j].direction, tunnel->warpDirection, tunnel->intensity)) : glm::normalize(glm::mix(primaryRays[j].direction, -tunnel->warpDirection, tunnel->intensity));
 				}
 
 				break;

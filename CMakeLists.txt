@@ -9,6 +9,10 @@ find_package(SFML 2.5 COMPONENTS graphics window REQUIRED)
 set(glm_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glm-0.9.9.8/cmake/glm)
 find_package(glm REQUIRED)
 
+if (MSVC)
+	add_compile_options(/openmp:experimental /O2 /Ob2 /Ot)
+endif()
+
 add_executable(NoEucRT src/main.cpp
 			   src/NoEucEngine.hpp src/NoEucEngine.cpp
 			   src/Renderer.hpp src/Renderer.cpp
@@ -18,6 +22,8 @@ add_executable(NoEucRT src/main.cpp
 			   src/Model.hpp src/Model.cpp
 			   src/Portal.hpp src/Portal.cpp
 			   src/WarpedTunnel.hpp src/WarpedTunnel.cpp
+			   src/ShrinkTunnel.hpp src/ShrinkTunnel.cpp
+			   src/RotationTunnel.hpp src/RotationTunnel.cpp
 			   src/Triangle.hpp src/Triangle.cpp
 			   src/AABB.hpp src/AABB.cpp
 			   src/Light.hpp src/Light.cpp

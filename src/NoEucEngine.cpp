@@ -1,11 +1,14 @@
 #include "NoEucEngine.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 #include "LambertianShader.hpp"
 #include "PhongShader.hpp"
 #include "Portal.hpp"
 #include "WarpedTunnel.hpp"
+#include "ShrinkTunnel.hpp"
+#include "RotationTunnel.hpp"
 
 /************ DELETE THIS ************/
 #include <iostream>
@@ -189,13 +192,15 @@ void NoEucEngine::handleMovement()
 		direction.x += 1.0f;
 	}
 
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
+	glm::vec4 worldDirection = scene.mainCamera.toWorld * direction;
+	scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
+
+	bool inside = false;
+
 	// Collision
 	if (direction.x || direction.z)
 	{
-		scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
-		glm::vec4 worldDirection = scene.mainCamera.toWorld * direction;
-		scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
-
 		Ray collisionRay(scene.mainCamera.position, glm::normalize(worldDirection));
 		float hitDistance = 0.0f;
 
@@ -204,25 +209,45 @@ void NoEucEngine::handleMovement()
 			for (const auto& object : scene.objects)
 			{
 				// Check if camera is inside warped tunnel
-				if (object->type == Model::Type::WarpedTunnel && scene.mainCamera.isInsideAABB(object->boundingBox))
+				if (scene.mainCamera.isInsideAABB(object->boundingBox))
 				{
-					auto tunnel = static_cast<WarpedTunnel*>(object.get());
+					inside = true;
 
-					scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
-					glm::vec4 localDirection = glm::inverse(scene.mainCamera.toWorld) * tunnel->direction;
-					
-					
-					float d = glm::dot(localDirection, direction);
-					glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(direction, localDirection, tunnel->intensity)) : glm::normalize(glm::mix(direction, -localDirection, tunnel->intensity));
+					if (object->type == Model::Type::WarpedTunnel)
+					{
+						auto tunnel = static_cast<WarpedTunnel*>(object.get());
 
-					direction = glm::normalize(warpedDirection);
-					collisionRay.direction = scene.mainCamera.toWorld * direction;
+						scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(-scene.mainCamera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
+						glm::vec4 localDirection = glm::inverse(scene.mainCamera.toWorld) * tunnel->moveDirection;
 
-					float magnitude = glm::abs(glm::dot(direction, localDirection));
-					distance = (distance * magnitude / tunnel->intensity) + (distance * (1 - magnitude));
+						float d = glm::dot(localDirection, direction);
+						glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(direction, localDirection, tunnel->intensity)) : glm::normalize(glm::mix(direction, -localDirection, tunnel->intensity));
 
-					scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
+						direction = glm::normalize(warpedDirection);
+						collisionRay.direction = scene.mainCamera.toWorld * direction;
+
+						float magnitude = glm::abs(glm::dot(direction, localDirection));
+						distance = (distance * magnitude / (1 - tunnel->intensity)) + (distance * (1 - magnitude));
+
+						scene.mainCamera.toWorld = glm::rotate(scene.mainCamera.toWorld, glm::radians(scene.mainCamera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
 					}
+					else if (object->type == Model::Type::ShrinkTunnel)
+					{
+						auto tunnel = static_cast<ShrinkTunnel*>(object.get());
+						float a = distance * glm::dot(glm::normalize(glm::vec2(worldDirection.x, worldDirection.z)), glm::normalize(glm::vec2(tunnel->direction.x, tunnel->direction.z)));
+						
+						float f = a / tunnel->length;
+
+						float yDistance = (scene.mainCamera.position.y - scene.floorLevel) * f * tunnel->finalSize;
+						collisionRay.direction.y += -yDistance;
+						collisionRay.direction = glm::normalize(collisionRay.direction);
+
+						scene.mainCamera.speed *= 1 - yDistance / (scene.mainCamera.position.y - scene.floorLevel);
+
+						scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * scene.mainCamera.toWorld;
+						scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+					}
+				}
 
 				if (collisionRay.intersectsAABB(object->boundingBox))
 				{
@@ -243,7 +268,20 @@ void NoEucEngine::handleMovement()
 									glm::vec4 outPoint(hitPoint + portal->exit - portal->center);
 
 									distance -= hitDistance;
-									scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { outPoint.x - hitPoint.x, 0, outPoint.z - hitPoint.z }) * scene.mainCamera.toWorld;
+									scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { outPoint.x - hitPoint.x, outPoint.y - hitPoint.y, outPoint.z - hitPoint.z }) * scene.mainCamera.toWorld;
+									scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+								}
+								else if (object->type == Model::Type::ShrinkTunnel)
+								{
+									auto tunnel = static_cast<ShrinkTunnel*>(object.get());
+									float distanceInTunnel = inside ? hitDistance : distance - hitDistance;
+
+									float a = distanceInTunnel * glm::dot(glm::normalize(glm::vec2(worldDirection.x, worldDirection.z)), glm::normalize(glm::vec2(tunnel->direction.x, tunnel->direction.z)));
+									float f = a / tunnel->length;
+
+									float yDistance = (scene.mainCamera.position.y - scene.floorLevel) * f * tunnel->finalSize;
+
+									scene.mainCamera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * scene.mainCamera.toWorld;
 									scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 								}
 
@@ -264,5 +302,4 @@ void NoEucEngine::handleMovement()
 
 	// Recalculate camera position in world space
 	scene.mainCamera.position = scene.mainCamera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	scene.mainCamera.position.y = 0.0f;
 }
