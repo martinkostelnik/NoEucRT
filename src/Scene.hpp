@@ -25,4 +25,5 @@ public:
 	static Scene createInfiniteTunnelScene();
 	static Scene createShortTunnelScene();
 	static Scene createLongTunnelScene();
+	static Scene createShrinkScene();
 };
