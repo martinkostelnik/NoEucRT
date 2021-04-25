@@ -67,7 +67,11 @@ int NoEucEngine::run()
 	{
 		// Process events
 		handleEvents();
+
+		// Handle movement
 		movementHandler.handleMovement(window, scene, scene.mainCamera);
+		
+		// Update fps counter
 		fpsText.setString("fps: " + std::to_string(1 / fpsClock.restart().asSeconds()));
 
 		// Render image

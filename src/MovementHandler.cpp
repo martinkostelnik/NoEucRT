@@ -191,7 +191,8 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 					camera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * camera.toWorld;
 					camera.position = camera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				}
-				else {
+				else
+				{
 					distance = 0.0f;
 				}
 			}
