@@ -290,8 +290,8 @@ Scene Scene::createShortTunnelScene()
 					  { 495, -205, -595, 1 }, { 805, -205, -595, 1 }, { 495, 105, -595, 1 }, { 805, 105, -595, 1 } };
 	tunnel->indices = { 0, 1, 2, 1, 3, 2, 4, 0, 2, 4, 2, 6, 5, 4, 6, 5, 6, 7, 5, 3, 1, 5, 7, 3, 6, 2, 7, 2, 3, 7, 5, 1, 0, 4, 5, 0 };
 	tunnel->warpDirection = { 0.0f, 0.0f, -1.0f, 0.0f };
-	tunnel->moveDirection = { 0.0f, 0.0f, -1.0f, 0.0f };
-	tunnel->intensity = 0.5f;
+	tunnel->intensity = 3.0f;
+	tunnel->compressed = true;
 	scene.objects.push_back(std::move(tunnel));
 	/*********************************************************/
 
@@ -347,8 +347,8 @@ Scene Scene::createLongTunnelScene()
 					  { 495, -205, -595, 1 }, { 805, -205, -595, 1 }, { 495, 105, -595, 1 }, { 805, 105, -595, 1 } };
 	tunnel->indices = { 0, 1, 2, 1, 3, 2, 4, 0, 2, 4, 2, 6, 5, 4, 6, 5, 6, 7, 5, 3, 1, 5, 7, 3, 6, 2, 7, 2, 3, 7, 5, 1, 0, 4, 5, 0 };
 	tunnel->warpDirection = { 0.0f, 0.0f, -1.0f, 0.0f };
-	tunnel->moveDirection = { 0.0f, 0.0f, -1.0f, 0.0f };
-	tunnel->intensity = 0.5f;
+	tunnel->intensity = 0.7f;
+	tunnel->compressed = false;
 	scene.objects.push_back(std::move(tunnel));
 	/*********************************************************/
 
@@ -383,11 +383,11 @@ Scene Scene::createShrinkScene()
 	scene.floorLevel = -200;
 
 	std::unique_ptr<Model> TunnelOuter{ new Model(Model::Type::Euclidean) };
-	TunnelOuter->vertices = { { 500, 100, 0, 1 }, { 800, 100, 0, 1 }, { 500, 100, -600, 1 }, { 800, 100, -600, 1}, // Top Inner corners
-							 { 500, -200, 0, 1 }, { 800, -200, 0, 1 }, { 500, -200, -600, 1 }, { 800, -200, -600, 1}, // Bot Inner corners
-							 { 467, -200, 0, 1 }, { 833, -200, 0, 1 }, { 467, -200, -600, 1 }, { 833, -200, -600, 1 }, // Bot outer corners
-							 { 467, 133, 0, 1 }, { 833, 133, 0, 1 }, { 467, 133, -600, 1 }, { 833, 133, -600, 1 }, // Top outer corners
-							 { 500, 133, 0, 1 }, { 800, 133, 0, 1 }, { 500, 133, -600, 1 }, { 800, 133, -600, 1 } }; // Help vertices
+	TunnelOuter->vertices = { { 500, 200, 0, 1 }, { 800, 200, 0, 1 }, { 500, 200, -400, 1 }, { 800, 200, -400, 1}, // Top Inner corners
+							 { 500, -200, 0, 1 }, { 800, -200, 0, 1 }, { 500, -200, -400, 1 }, { 800, -200, -400, 1}, // Bot Inner corners
+							 { 467, -200, 0, 1 }, { 833, -200, 0, 1 }, { 467, -200, -400, 1 }, { 833, -200, -400, 1 }, // Bot outer corners
+							 { 467, 233, 0, 1 }, { 833, 233, 0, 1 }, { 467, 233, -400, 1 }, { 833, 233, -400, 1 }, // Top outer corners
+							 { 500, 233, 0, 1 }, { 800, 233, 0, 1 }, { 500, 233, -400, 1 }, { 800, 233, -400, 1 } }; // Help vertices
 	TunnelOuter->indices = { 2, 0, 4, 2, 4, 6, 1, 3, 7, 1, 7, 5, 1, 0, 2, 1, 2, 3, 8, 12, 10, 12, 14, 10, 9, 15, 13, 9, 11, 15, 12, 13, 14, 13, 15, 14,
 							8, 4, 12, 4, 16, 12, 5, 9, 17, 9, 13, 17, 0, 1, 16, 1, 17, 16, 6, 10, 18, 10, 14, 18, 11, 7, 15, 7, 19, 15, 3, 2, 19, 2, 18, 19 };
 	TunnelOuter->material.albedo = { 0.0f, 0.0f, 1.0f };
@@ -399,13 +399,13 @@ Scene Scene::createShrinkScene()
 
 	/************************* Tunnel ************************/
 	std::unique_ptr<ShrinkTunnel> tunnel{ new ShrinkTunnel() };
-	tunnel->vertices = { {495, -205, -5, 1 }, { 805, -205, -5, 1 }, { 495, 105, -5, 1 }, { 805, 105, -5, 1 },
-					  { 495, -205, -595, 1 }, { 805, -205, -595, 1 }, { 495, 105, -595, 1 }, { 805, 105, -595, 1 } };
+	tunnel->vertices = { {495, -205, -5, 1 }, { 805, -205, -5, 1 }, { 495, 205, -5, 1 }, { 805, 205, -5, 1 },
+					  { 495, -205, -395, 1 }, { 805, -205, -395, 1 }, { 495, 205, -395, 1 }, { 805, 205, -395, 1 } };
 	tunnel->indices = { 0, 1, 2, 1, 3, 2, 4, 0, 2, 4, 2, 6, 5, 4, 6, 5, 6, 7, 5, 3, 1, 5, 7, 3, 6, 2, 7, 2, 3, 7, 5, 1, 0, 4, 5, 0 };
 	tunnel->direction = { 0.0f, 0.0f, -1.0f, 0.0f };
-	tunnel->finalSize = 0.5f;
+	tunnel->finalSize = 0.3f;
 	tunnel->length = glm::distance(tunnel->vertices[0], tunnel->vertices[4]);
-	tunnel->ceiling = 105;
+	tunnel->ceiling = 205;
 	scene.objects.push_back(std::move(tunnel));
 	/*********************************************************/
 
