@@ -22,7 +22,7 @@ public:
 	sf::Image cubeMap;
 	std::vector<glm::vec2> mapping;
 
-	sf::Color getColor(const glm::vec4& rayDirection) const;
+	glm::vec3 getColor(const glm::vec4& rayDirection) const;
 
 private:
 	size_t faceSize;

@@ -25,7 +25,7 @@ Skybox::Skybox(const std::string fileName)
     mapping.emplace_back(faceSize * 3, faceSize * 2 - 1); // 5 - back face
 }
 
-sf::Color Skybox::getColor(const glm::vec4& rayDirection) const
+glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
 {
     float absX = fabs(rayDirection.x);
     float absY = fabs(rayDirection.y);
@@ -102,5 +102,7 @@ sf::Color Skybox::getColor(const glm::vec4& rayDirection) const
     size_t x = mapping[index].x + u * (faceSize - 1);
     size_t y = mapping[index].y - v * (faceSize - 1);
 
-	return cubeMap.getPixel(x, y);
+    sf::Color color = cubeMap.getPixel(x, y);
+
+    return glm::vec3(color.r, color.g, color. b);
 }

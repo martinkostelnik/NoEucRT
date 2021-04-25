@@ -22,7 +22,6 @@ class Renderer
 {
 public:
 	Renderer(const size_t width, const size_t height, const float& fov);
-	~Renderer();
 	void render(const Scene& scene, const Shader& shader, sf::Texture& texture);
 	void precomputeRays();
 
@@ -43,7 +42,7 @@ private:
 	const float aspectRatio;
 	const float& fov;
 
-	sf::Uint8* pixels;
+	std::unique_ptr<sf::Uint8[]> pixels;
 	std::vector<Ray> precomputedRays;
 	std::vector<Ray> primaryRays;
 };

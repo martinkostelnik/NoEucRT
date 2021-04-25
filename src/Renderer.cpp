@@ -15,11 +15,6 @@
 #include "Portal.hpp"
 #include "WarpedTunnel.hpp"
 
-/************ DELETE THIS ************/
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-/*************************************/
-
 Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
 	width(width),
 	height(height),
@@ -28,17 +23,12 @@ Renderer::Renderer(const size_t width, const size_t height, const float& fov) :
 {
 	const size_t len = width * height * 4;
 
-	pixels = new sf::Uint8[len] { 0 };
+	pixels = std::unique_ptr<sf::Uint8[]>(new sf::Uint8[len] { 0 });
 
 	for (int i = 3; i < len; i += 4)
 	{
 		pixels[i] = 255;
 	}
-}
-
-Renderer::~Renderer()
-{
-	delete[] pixels;
 }
 
 void Renderer::precomputeRays()
@@ -166,7 +156,6 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 	// Check if we are in warped tunnel
 	// If yes, we have to recompute ray directions
 	bool warped = false;
-	glm::vec4 preWarped(0.0f);
 	#pragma omp parallel for
 	for (int i = 0; i < scene.objects.size(); i++)
 	{
@@ -209,22 +198,23 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 			// Cast ray into the scene
 			castRayData data = castRay(primaryRays[position], scene, warped, scene.mainCamera.toWorld * precomputedRays[position].direction);
 
+			glm::vec3 color(0.0f);
+
 			if (data.hit) // We hit something, invoke shader and set color
 			{
-				glm::vec3 color = shader.getColor(data.ray, scene, data.hitPoint, *scene.objects[data.hitObjectIndex], *data.hitTriangle);
-				pixels[position * 4] = color.x;	// RED
-				pixels[position * 4 + 1] = color.y; // GREEN
-				pixels[position * 4 + 2] = color.z; // BLUE
+				color = shader.getColor(data.ray, scene, data.hitPoint, *scene.objects[data.hitObjectIndex], *data.hitTriangle);
 			}
 			else // We hit nothing
 			{
-				sf::Color color = scene.skybox.getColor(glm::normalize(data.ray.direction));
-				pixels[position * 4] = color.r; // RED
-				pixels[position * 4 + 1] = color.g; // GREEN
-				pixels[position * 4 + 2] = color.b; // BLUE
+				color = scene.skybox.getColor(glm::normalize(data.ray.direction));
+
 			}
+
+			pixels[position * 4] = color.r; // RED
+			pixels[position * 4 + 1] = color.g; // GREEN
+			pixels[position * 4 + 2] = color.b; // Blue
 		}
 	}
 
-	texture.update(pixels);
+	texture.update(pixels.get());
 }
