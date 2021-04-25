@@ -117,17 +117,25 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 				auto tunnel = static_cast<WarpedTunnel*>(scene.objects[data.hitObjectIndex].get());
 
 				float d = glm::dot(tunnel->warpDirection, ray.direction);
-				glm::vec4 warpedDirection = d > 0.0f ? glm::normalize(glm::mix(ray.direction, tunnel->warpDirection, tunnel->intensity)) : glm::normalize(glm::mix(ray.direction, -tunnel->warpDirection, tunnel->intensity));
+				glm::vec4 warpedDirection(0.0f);
+
+				if (tunnel->compressed)
+				{
+					warpedDirection = glm::normalize(ray.direction + d * tunnel->warpDirection * tunnel->intensity);
+				}
+				else
+				{
+					warpedDirection = glm::normalize(ray.direction - d * tunnel->warpDirection * tunnel->intensity);
+				}
 
 				Ray warpedRay(data.hitPoint + ray.direction * bias, warpedDirection);
-
 				data = castRay(warpedRay, scene, true, ray.direction);
 			}
 			else // Ray leaving warping tunnel
 			{
 				data.hit = false;
-				Ray leavingRay(data.hitPoint + ray.direction * bias, prevDirection);
 
+				Ray leavingRay(data.hitPoint + ray.direction * bias, prevDirection);
 				data = castRay(leavingRay, scene);
 			}
 		}
@@ -173,7 +181,15 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 				for (int j = 0; j < primaryRays.size(); j++)
 				{
 					float d = glm::dot(tunnel->warpDirection, primaryRays[j].direction);
-					primaryRays[j].direction = d > 0.0f ? glm::normalize(glm::mix(primaryRays[j].direction, tunnel->warpDirection, tunnel->intensity)) : glm::normalize(glm::mix(primaryRays[j].direction, -tunnel->warpDirection, tunnel->intensity));
+
+					if (tunnel->compressed)
+					{
+						primaryRays[j].direction = glm::normalize(primaryRays[j].direction + d * tunnel->warpDirection * tunnel->intensity);
+					}
+					else
+					{
+						primaryRays[j].direction = glm::normalize(primaryRays[j].direction - d * tunnel->warpDirection * tunnel->intensity);
+					}
 				}
 
 				break;
@@ -188,18 +204,10 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 		#pragma omp parallel for
 		for (int x = 0; x < size.x; x++)
 		{
-			const size_t position = ((y * size.x) + x);
+			const size_t position = size_t(y) * size.x + x;
 
 			// Cast ray into the scene
-			castRayData data;
-			if (warped)
-			{
-				data = castRay(primaryRays[position], scene, warped, scene.mainCamera.toWorld * precomputedRays[position].direction);
-			}
-			else
-			{
-				data = castRay(primaryRays[position], scene);
-			}
+			castRayData data = castRay(primaryRays[position], scene, warped, scene.mainCamera.toWorld * precomputedRays[position].direction);
 
 			if (data.hit) // We hit something, invoke shader and set color
 			{

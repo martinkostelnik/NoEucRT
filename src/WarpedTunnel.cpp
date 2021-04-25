@@ -11,10 +11,10 @@
 
 #include "WarpedTunnel.hpp"
 
-WarpedTunnel::WarpedTunnel() : 
-	moveDirection(0.0f),
+WarpedTunnel::WarpedTunnel() :
 	warpDirection(0.0f),
-	intensity(0.0f)
+	intensity(0.0f),
+	compressed(true)
 {
 	type = Model::Type::WarpedTunnel;
 }

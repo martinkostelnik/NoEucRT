@@ -142,26 +142,34 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 			{
 				auto tunnel = static_cast<WarpedTunnel*>(object.get());
 
-				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(-camera.Xrotation), { 1, 0, 0 }); // Undo X axis rotation
+				// Undo X axis rotation
+				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(-camera.Xrotation), { 1, 0, 0 });
 
-				glm::vec4 localDirection = glm::inverse(camera.toWorld) * tunnel->moveDirection; // Get tunnel movement direction in camera space
+				// Get tunnel movement direction in camera space
+				glm::vec4 localDirection = glm::inverse(camera.toWorld) * tunnel->warpDirection;
 
 				// Calculate alignment of movement direction with tunnel direction
 				float alignment = glm::dot(localDirection, direction);
+				float magnitude = glm::abs(alignment);
 
-				glm::vec4 warpedDirection = alignment > 0.0f ?
-											glm::mix(direction, localDirection, tunnel->intensity) :
-											glm::mix(direction, -localDirection, tunnel->intensity);
+				glm::vec4 warpedDirection = direction + alignment * localDirection * tunnel->intensity;
+
+				if (tunnel->compressed)
+				{
+					warpedDirection = direction + alignment * localDirection * tunnel->intensity;
+					distance = (distance * magnitude * tunnel->intensity) + (distance * (1 - magnitude));
+				}
+				else
+				{
+					warpedDirection = direction - alignment * localDirection * tunnel->intensity;
+					distance = (distance * magnitude * (1 - tunnel->intensity)) + (distance * (1 - magnitude));
+				}
 
 				direction = glm::normalize(warpedDirection);
 				collisionRay.direction = glm::normalize(camera.toWorld * direction);
 
-				float magnitude = glm::abs(alignment);
-
-				// Calculate new distance to be traveled based on the alignment with warping direction
-				distance = (distance * magnitude / (1 - tunnel->intensity)) + (distance * (1 - magnitude));
-
-				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(camera.Xrotation), { 1, 0, 0 }); // Reapply X axis rotation
+				// Reapply X axis rotation
+				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(camera.Xrotation), { 1, 0, 0 });
 			}
 			else if (object->type == Model::Type::ShrinkTunnel) // We are inside shrinking tunnel
 			{
@@ -228,14 +236,9 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 						}
 						else if (object->type == Model::Type::WarpedTunnel || object->type == Model::Type::RotationTunnel)
 						{
-							// TODO: STEP TO WARPED TUNNEL
 							if (!inside) // Entering warped tunnel
 							{
 								distance = hitDistance + 1;
-							}
-							else // Exiting warped tunnel
-							{
-								inside = false;
 							}
 						}
 						else if (object->type == Model::Type::ShrinkTunnel)
