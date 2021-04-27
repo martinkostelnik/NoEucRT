@@ -17,7 +17,7 @@ PhongShader::PhongShader()
 {
 }
 
-glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::vec4& hitPoint, const Model& hitModel, const Triangle& hitTriangle) const
+glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::vec4& hitPoint, const Model& hitModel, const Triangle& hitTriangle, const float u, const float v) const
 {
     glm::vec3 hitColor(0.0f);
 
@@ -25,6 +25,13 @@ glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::v
     const glm::vec3 edge2 = { hitTriangle.v3.x - hitTriangle.v1.x, hitTriangle.v3.y - hitTriangle.v1.y, hitTriangle.v3.z - hitTriangle.v1.z };
 
     const glm::vec4 hitNormal = { glm::normalize(glm::cross(edge1, edge2)), 0.0f };
+
+    const glm::vec2 textureCoordinates = (*hitModel.textureCoordinateMapping.at(&hitTriangle.v1)) * u
+        + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * v
+        + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * (1 - u - v);
+
+    sf::Color color = hitModel.texture.getPixel(textureCoordinates.x, textureCoordinates.y);
+    glm::vec3 albedoColor = glm::vec3(color.r / 255, color.g / 255, color.b / 255);
 
     glm::vec3 diffuse(0.0f);
     glm::vec3 specular(0.0f);
@@ -54,7 +61,7 @@ glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::v
 
         glm::vec3 R = glm::normalize(glm::reflect(glm::normalize(-lightDirection), hitNormal));
 
-        diffuse += visible * hitModel.material.albedo * lightAmount * glm::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
+        diffuse += visible * albedoColor * lightAmount * glm::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
         specular += visible * lightAmount * glm::pow(glm::max(0.0f, glm::dot(R, { -ray.direction })), hitModel.material.shininess);
     }
         

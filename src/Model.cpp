@@ -47,6 +47,17 @@ void Model::assembleTriangles()
 	}
 }
 
+void Model::createTextureMapping()
+{
+	if (!textureCoordinates.empty())
+	{
+		for (size_t i = 0; i < vertices.size(); i++)
+		{
+			textureCoordinateMapping.insert({ &vertices[i], &textureCoordinates[i] });
+		}
+	}
+}
+
 void Model::buildAABB()
 {
 	for (const auto& vertex : vertices)
@@ -114,15 +125,7 @@ void Model::loadFromFile(const std::string fileName)
 			indices.push_back(stoi(f2) - 1);
 			indices.push_back(stoi(f3) - 1);
 		}
-		else if (type == "vn") // Reading vertex normal
-		{
-			float x = 0.0,
-				  y = 0.0,
-				  z = 0.0;
-
-			lineStream >> x >> y >> z;
-			vertexNormals.push_back({ x, y, z });
-		}
 	}
+
 	fileHandle.close();
 }

@@ -563,6 +563,9 @@ void Scene::preProcessScene()
 		// Primitive assembly
 		object->assembleTriangles();
 
+		// Create texture mapping
+		object->createTextureMapping();
+
 		// Construst BVH on object
 		object->buildAABB();
 	}

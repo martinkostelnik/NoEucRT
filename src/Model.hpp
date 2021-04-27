@@ -11,8 +11,10 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <glm/glm.hpp>
 #include <vector>
+#include <map>
 #include <string>
 
 #include "Triangle.hpp"
@@ -36,16 +38,19 @@ public:
 	Model(const std::string fileName);
 
 	void assembleTriangles();
+	void createTextureMapping();
 	void buildAABB();
 	void loadFromFile(const std::string fileName);
 
 	std::vector<glm::vec4> vertices;
-	std::vector<glm::vec3> vertexNormals;
+	std::vector<glm::vec2> textureCoordinates;
 	std::vector<size_t> indices;
+	std::map<const glm::vec4*, const glm::vec2*> textureCoordinateMapping;
 
 	glm::mat4 toWorld;
 	
 	Material material;
+	sf::Image texture;
 
 	std::vector<Triangle> triangles;
 	AABB boundingBox;
