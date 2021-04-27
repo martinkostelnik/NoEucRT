@@ -51,7 +51,7 @@ void Renderer::precomputeRays()
 
 Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, const bool warped, const glm::vec4& prevDirection) const
 {
-	castRayData data = { false, 0, nullptr, {0.0f, 0.0f, 0.0f, 1.0f}, ray };
+	castRayData data = { false, 0, nullptr, {0.0f, 0.0f, 0.0f, 1.0f}, ray, 0.0f, 0.0f };
 	float distance = 0.0f;
 	float minDistance = std::numeric_limits<float>::infinity();
 
@@ -62,7 +62,7 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 		{
 			for (const auto& triangle : scene.objects[i]->triangles)
 			{
-				if (ray.intersectsTriangle(triangle, distance)) // distance is out parameter
+				if (ray.intersectsTriangle(triangle, distance, &data.u, &data.v)) // distance is out parameter
 				{
 					data.hit = true;
 
@@ -202,7 +202,7 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 
 			if (data.hit) // We hit something, invoke shader and set color
 			{
-				color = shader.getColor(data.ray, scene, data.hitPoint, *scene.objects[data.hitObjectIndex], *data.hitTriangle);
+				color = shader.getColor(data.ray, scene, data.hitPoint, *scene.objects[data.hitObjectIndex], *data.hitTriangle, data.u, data.v);
 			}
 			else // We hit nothing
 			{

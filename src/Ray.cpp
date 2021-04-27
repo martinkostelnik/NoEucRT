@@ -30,7 +30,7 @@ Ray::Ray(const glm::vec4& origin, const glm::vec4& direction) :
 {
 }
 
-bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) const
+bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance, float* out_u, float* out_v) const
 {
     const float EPSILON = 0.0000001;
 
@@ -84,6 +84,11 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance) cons
 
     if (t > EPSILON)
     {
+        if (out_u && out_v)
+        {
+            *out_u = u;
+            *out_v = v;
+        }
         out_distance = t;
         return true;
     }

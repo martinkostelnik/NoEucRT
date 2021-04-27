@@ -29,7 +29,7 @@ public:
 	glm::vec4 origin;
 	glm::vec4 direction;
 
-	bool intersectsTriangle(const Triangle& triangle, float& out_distance) const;
+	bool intersectsTriangle(const Triangle& triangle, float& out_distance, float* out_u = nullptr, float* out_v = nullptr) const;
 	bool intersectsAABB(const AABB& aabb, float* const out_distance = nullptr) const;
 	bool seesLight(const Light& light, const Scene& scene) const;
 };
