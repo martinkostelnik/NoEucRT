@@ -12,6 +12,7 @@
 #include "LambertianShader.hpp"
 
 #include <glm/gtx/norm.hpp>
+#include <iostream>
 
 LambertianShader::LambertianShader()
 {
@@ -30,8 +31,8 @@ glm::vec3 LambertianShader::getColor(const Ray& ray, const Scene& scene, const g
                                        + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * v
                                        + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * (1 - u - v);
 
-    sf::Color color = hitModel.texture.getPixel(textureCoordinates.x, textureCoordinates.y);
-    glm::vec3 albedoColor = glm::vec3(color.r / 255, color.g / 255, color.b / 255);
+    sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * hitModel.texture.getSize().x, textureCoordinates.y * hitModel.texture.getSize().y);
+    glm::vec3 albedoColor = glm::vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 
     #pragma omp parallel for
     for (int i = 0; i < scene.lights.size(); i++)
