@@ -43,7 +43,7 @@ Scene Scene::createBaseScene()
 	std::unique_ptr<Model> floor { new Model(Model::Type::Euclidean) };
 	floor->vertices = { {1000, -200, 1000, 1}, {1000, -200, -1000, 1}, {-1000, -200, -1000, 1}, {-1000, -200, 1000, 1} };
 	floor->indices = { 0, 1, 2, 0, 2, 3 };
-	floor->textureCoordinates = { { 1, 0 }, { 0, 0 }, { 1, 1 }, { 0, 1 } };
+	floor->textureCoordinates = { { 1, 1 }, { 1, 0 }, { 0, 0 }, { 0, 1 } };
 	floor->material.albedo = { 0.0f, 1.0f, 0.0f };
 	floor->material.kd = 1.0f;
 	floor->material.ks = 0.01f;
