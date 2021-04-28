@@ -40,6 +40,7 @@ public:
 	static Scene createLongTunnelScene();
 	static Scene createShrinkScene();
 	static Scene createRotatingTunnelScene();
+	static Scene createRotatingTunnelScene2();
 
 	void preProcessScene();
 };

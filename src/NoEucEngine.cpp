@@ -155,6 +155,12 @@ void NoEucEngine::handleEvents()
 				scene.preProcessScene();
 				sceneName.setString(scene.name);
 			}
+			else if (event.key.code == sf::Keyboard::Num8)
+			{
+				scene = Scene::createRotatingTunnelScene2();
+				scene.preProcessScene();
+				sceneName.setString(scene.name);
+			}
 			break;
 
 		default:
