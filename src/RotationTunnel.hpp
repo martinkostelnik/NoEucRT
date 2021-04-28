@@ -21,5 +21,6 @@ public:
 
 	glm::vec4 direction;
 	float maxRotation;
+	glm::vec3 axes;
 	float length;
 };

@@ -207,7 +207,8 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 
 				float rotation = glm::radians(tunnel->maxRotation * rotateFraction);
 
-				camera.toWorld = glm::rotate(camera.toWorld, rotation, { 0, 0, 1 });
+				camera.toWorld = glm::rotate(camera.toWorld, rotation, tunnel->axes);
+				collisionRay.direction = glm::normalize(camera.toWorld * direction);
 			}
 		}
 
