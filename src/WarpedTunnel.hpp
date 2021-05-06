@@ -19,6 +19,8 @@ class WarpedTunnel : public Model
 public:
 	WarpedTunnel();
 
+	void loadFromFile(const std::string fileName);
+
 	glm::vec4 warpDirection;
 	float intensity;
 	bool compressed;

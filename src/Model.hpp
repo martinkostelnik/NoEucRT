@@ -40,7 +40,6 @@ public:
 	void assembleTriangles();
 	void buildAABB();
 	void loadFromFile(const std::string fileName);
-	virtual void loadNonEuclideanData(const std::string fileName);
 
 	std::vector<glm::vec4> vertices;
 	std::vector<glm::vec2> textureCoordinates;

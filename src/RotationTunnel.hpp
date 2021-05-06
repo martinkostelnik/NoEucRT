@@ -19,6 +19,8 @@ class RotationTunnel : public Model
 public:
 	RotationTunnel();
 
+	void loadFromFile(const std::string fileName);
+
 	glm::vec4 direction;
 	float maxRotation;
 	glm::vec3 axes;

@@ -11,7 +11,6 @@
 
 #include "Model.hpp"
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
@@ -100,20 +99,17 @@ void Model::loadFromFile(const std::string fileName)
 
 		if (type == "v") // Reading vertex
 		{
-			float x = 0.0f;
-			float y = 0.0f;
-			float z = 0.0f;
+			glm::vec4 vertex { 0.0f, 0.0f, 0.0f, 1.0f };
 
-			lineStream >> x >> y >> z;
-			vertices.push_back(glm::vec4(x, y, z, 1.0f));
+			lineStream >> vertex.x >> vertex.y >> vertex.z;
+			vertices.push_back(vertex);
 		}
 		else if (type == "vt") // Reading texture coordinate
 		{
-			float x = 0.0f;
-			float y = 0.0f;
+			glm::vec2 coords { 0.0f, 0.0f };
 
-			lineStream >> x >> y;
-			textureCoordinates.push_back(glm::vec2(x, y));
+			lineStream >> coords.x >> coords.y;
+			textureCoordinates.push_back(coords);
 		}
 		else if (type == "f") // Reading face
 		{
@@ -140,8 +136,4 @@ void Model::loadFromFile(const std::string fileName)
 	}
 
 	fileHandle.close();
-}
-
-void Model::loadNonEuclideanData(const std::string fileName)
-{
 }

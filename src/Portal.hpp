@@ -21,6 +21,8 @@ class Portal : public Model
 public:
 	Portal();
 
+	void loadFromFile(const std::string fileName);
+
 	glm::vec4 exit;
 	glm::vec4 center;
 };

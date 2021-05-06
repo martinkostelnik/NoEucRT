@@ -71,7 +71,7 @@ glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::v
         glm::vec3 R = glm::normalize(glm::reflect(glm::normalize(-lightDirection), hitNormal));
 
         diffuse += visible * albedoColor * lightAmount * glm::max(0.0f, glm::dot(hitNormal, glm::normalize(lightDirection)));
-        specular += visible * lightAmount * glm::pow(glm::max(0.0f, glm::dot(R, { -ray.direction })), hitModel.material.shininess);
+        specular += visible * lightAmount * glm::pow(glm::max(0.0f, glm::dot(R, { glm::normalize(-ray.direction) })), hitModel.material.shininess);
     }
         
     hitColor = diffuse * hitModel.material.kd + specular * hitModel.material.ks + glm::vec3(10.0f, 10.0f, 10.0f) * hitModel.material.ka;
