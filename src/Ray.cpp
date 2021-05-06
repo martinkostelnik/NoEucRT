@@ -102,36 +102,25 @@ bool Ray::intersectsAABB(const AABB& aabb, float* const out_distance) const
 {
     glm::vec3 invDir(1.0f / direction.x, 1.0f / direction.y, 1.0f / direction.z);
 
-    float t = 0.0f;
-    float t1 = (aabb.min.x - origin.x) * invDir.x;
-    float t2 = (aabb.max.x - origin.x) * invDir.x;
-    float t3 = (aabb.min.y - origin.y) * invDir.y;
-    float t4 = (aabb.max.y - origin.y) * invDir.y;
-    float t5 = (aabb.min.z - origin.z) * invDir.z;
-    float t6 = (aabb.max.z - origin.z) * invDir.z;
+    float tx1 = (aabb.min.x - origin.x) * invDir.x;
+    float tx2 = (aabb.max.x - origin.x) * invDir.x;
 
-    float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
-    float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+    float tmin = glm::min(tx1, tx2);
+    float tmax = glm::max(tx1, tx2);
 
-    // if tmax < 0, ray (line) is intersecting AABB, but the whole AABB is behind us
-    if (tmax < 0)
-    {
-        t = tmax;
-        return false;
-    }
+    float ty1 = (aabb.min.y - origin.y) * invDir.y;
+    float ty2 = (aabb.max.y - origin.y) * invDir.y;
 
-    // if tmin > tmax, ray doesn't intersect AABB
-    if (tmin > tmax)
-    {
-        t = tmax;
-        return false;
-    }
-    if (out_distance)
-    {
-        *out_distance = tmin;
-    }
+    tmin = glm::max(tmin, glm::min(ty1, ty2));
+    tmax = glm::min(tmax, glm::max(ty1, ty2));
 
-    return true;
+    float tz1 = (aabb.min.z - origin.z) * invDir.z;
+    float tz2 = (aabb.max.z - origin.z) * invDir.z;
+
+    tmin = glm::max(tmin, glm::min(tz1, tz2));
+    tmax = glm::min(tmax, glm::max(tz1, tz2));
+
+    return tmax >= glm::max(0.0f, tmin);
 }
 
 bool Ray::seesLight(const Light& light, const Scene& scene) const

@@ -11,6 +11,11 @@
 
 #include "Material.hpp"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+
 Material::Material(const glm::vec3 albedo) :
 	albedo(albedo),
 	shininess(0.0f),
@@ -27,4 +32,45 @@ Material::Material(const glm::vec3 albedo, const float shininess, const float ks
 	kd(kd),
 	ka(ka)
 {
+}
+
+void Material::loadFromFile(const std::string fileName)
+{
+	std::ifstream fileHandle;
+	fileHandle.open(fileName);
+
+	if (!fileHandle)
+		return;
+
+	std::string line;
+
+	while (std::getline(fileHandle, line))
+	{
+		std::istringstream lineStream(line);
+		std::string type;
+
+		lineStream >> type;
+
+		// Convert to lowercase
+		std::transform(type.begin(), type.end(), type.begin(), [](unsigned char c) { return std::tolower(c); });
+
+		if (type == "ks")
+		{
+			lineStream >> ks;
+		}
+		else if (type == "kd")
+		{
+			lineStream >> kd;
+		}
+		else if (type == "ka")
+		{
+			lineStream >> ka;
+		}
+		else if (type == "ns")
+		{
+			lineStream >> shininess;
+		}
+	}
+
+	fileHandle.close();
 }

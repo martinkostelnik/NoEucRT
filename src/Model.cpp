@@ -47,17 +47,6 @@ void Model::assembleTriangles()
 	}
 }
 
-void Model::createTextureMapping()
-{
-	if (!textureCoordinates.empty())
-	{
-		for (size_t i = 0; i < vertices.size(); i++)
-		{
-			textureCoordinateMapping.insert({ &vertices[i], &textureCoordinates[i] });
-		}
-	}
-}
-
 void Model::buildAABB()
 {
 	for (const auto& vertex : vertices)
@@ -106,26 +95,53 @@ void Model::loadFromFile(const std::string fileName)
 
 		lineStream >> type;
 
-		if (type == "v" || type == "V") // Reading vertex
+		// Convert to lowercase
+		std::transform(type.begin(), type.end(), type.begin(), [](unsigned char c) { return std::tolower(c); });
+
+		if (type == "v") // Reading vertex
 		{
-			float x = 0.0,
-				  y = 0.0,
-			      z = 0.0;
+			float x = 0.0f;
+			float y = 0.0f;
+			float z = 0.0f;
 
 			lineStream >> x >> y >> z;
-			vertices.push_back({ x, y, z, 1 });
+			vertices.push_back(glm::vec4(x, y, z, 1.0f));
 		}
-		else if (type == "f" || type == "F") // Reading face
+		else if (type == "vt") // Reading texture coordinate
 		{
-			std::string f1, f2, f3;
+			float x = 0.0f;
+			float y = 0.0f;
 
-			lineStream >> f1 >> f2 >> f3;
+			lineStream >> x >> y;
+			textureCoordinates.push_back(glm::vec2(x, y));
+		}
+		else if (type == "f") // Reading face
+		{
+			std::string values[3];
 
-			indices.push_back(stoi(f1) - 1);
-			indices.push_back(stoi(f2) - 1);
-			indices.push_back(stoi(f3) - 1);
+			lineStream >> values[0] >> values[1] >> values[2];
+			for (size_t i = 0; i < 3; i++)
+			{
+				size_t delPos = values[i].find('/');
+
+				if (delPos == std::string::npos) // Char / not found, we have no texture coordinates
+				{
+					indices.push_back(size_t(stoi(values[i])) - 1);
+				}
+				else // Load texture coordinates as well
+				{
+					size_t vIndex = size_t(stoi(values[i].substr(0, delPos))) - 1;
+					size_t tIndex = size_t(stoi(values[i].substr(delPos + 1))) - 1;
+					indices.push_back(vIndex);
+					textureCoordinateMapping.insert({ &vertices[vIndex], &textureCoordinates[tIndex] });
+				}
+			}
 		}
 	}
 
 	fileHandle.close();
+}
+
+void Model::loadNonEuclideanData(const std::string fileName)
+{
 }

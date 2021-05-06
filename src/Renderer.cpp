@@ -129,7 +129,8 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 				data = castRay(leavingRay, scene);
 			}
 		}
-		else if (scene.objects[data.hitObjectIndex]->type == Model::Type::ShrinkTunnel || scene.objects[data.hitObjectIndex]->type == Model::Type::RotationTunnel)
+		else if (scene.objects[data.hitObjectIndex]->type == Model::Type::ShrinkTunnel
+				 || scene.objects[data.hitObjectIndex]->type == Model::Type::RotationTunnel)
 		{
 			data.hit = false;
 			Ray r(data.hitPoint + ray.direction * bias, ray.direction);

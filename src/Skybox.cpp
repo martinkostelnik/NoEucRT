@@ -42,8 +42,6 @@ glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
 
     // POSITIVE X
     if (isXPositive && absX >= absY && absX >= absZ) {
-        // u (0 to 1) goes from +z to -z
-        // v (0 to 1) goes from -y to +y
         maxAxis = absX;
         u = rayDirection.z;
         v = rayDirection.y;
@@ -51,8 +49,6 @@ glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
     }
     // NEGATIVE X
     else if (!isXPositive && absX >= absY && absX >= absZ) {
-        // u (0 to 1) goes from -z to +z
-        // v (0 to 1) goes from -y to +y
         maxAxis = absX;
         u = -rayDirection.z;
         v = rayDirection.y;
@@ -60,8 +56,6 @@ glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
     }
     // POSITIVE Y
     else if (isYPositive && absY >= absX && absY >= absZ) {
-        // u (0 to 1) goes from -x to +x
-        // v (0 to 1) goes from +z to -z
         maxAxis = absY;
         u = rayDirection.x;
         v = rayDirection.z;
@@ -69,8 +63,6 @@ glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
     }
     // NEGATIVE Y
     else if (!isYPositive && absY >= absX && absY >= absZ) {
-        // u (0 to 1) goes from -x to +x
-        // v (0 to 1) goes from -z to +z
         maxAxis = absY;
         u = rayDirection.x;
         v = -rayDirection.z;
@@ -78,8 +70,6 @@ glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
     }
     // POSITIVE Z
     else if (isZPositive && absZ >= absX && absZ >= absY) {
-        // u (0 to 1) goes from -x to +x
-        // v (0 to 1) goes from -y to +y
         maxAxis = absZ;
         u = rayDirection.x;
         v = rayDirection.y;
@@ -87,8 +77,6 @@ glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
     }
     // NEGATIVE Z
     else if (!isZPositive && absZ >= absX && absZ >= absY) {
-        // u (0 to 1) goes from +x to -x
-        // v (0 to 1) goes from -y to +y
         maxAxis = absZ;
         u = -rayDirection.x;
         v = rayDirection.y;

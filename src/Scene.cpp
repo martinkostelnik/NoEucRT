@@ -16,6 +16,8 @@
 #include "ShrinkTunnel.hpp"
 #include "RotationTunnel.hpp"
 
+#include <iostream>
+
 Scene::Scene() :
 	objects(),
 	mainCamera(),
@@ -30,24 +32,15 @@ Scene Scene::createBaseScene()
 	scene.name = "Basic scene";
 
 	/************************ Objects ************************/
-	/*Model testingCube(Model::Type::Euclidean);
-	testingCube.vertices = { {-100, -100, -100, 1}, {0, -100, -100, 1}, {0, 100, -100, 1}, {-100, 100, -100, 1},
-							 {-100, -100, -200, 1}, {0, -100, -200, 1}, {0, 100, -200, 1}, {-100, 100, -200, 1} };
-	testingCube.indices = { 0, 1, 2, 0, 2, 3, 0, 3, 4, 3, 7, 4, 6, 5, 4, 4, 7, 6, 1, 5, 2, 2, 5, 6, 0, 4, 1, 1, 4, 5, 2, 7, 3, 2, 6, 7 };
-	testingCube.material.albedo = { 1.0f, 0.0f, 0.0f };
-	testingCube.material.shininess = 15.0f;
-	testingCube.material.kd = 1.0f;
-	testingCube.material.ks = 0.04f;
-	scene.objects.push_back(std::make_unique<Model>(testingCube));*/
+	std::unique_ptr<Model> testingCube { new Model(Model::Type::Euclidean) };
+	testingCube->loadFromFile("resources/testingCube.obj");
+	testingCube->material.loadFromFile("resources/testingCube.mtl");
+	testingCube->texture.loadFromFile("resources/texture.png");
+	scene.objects.push_back(std::move(testingCube));
 
 	std::unique_ptr<Model> floor { new Model(Model::Type::Euclidean) };
-	floor->vertices = { {1000, -200, 1000, 1}, {1000, -200, -1000, 1}, {-1000, -200, -1000, 1}, {-1000, -200, 1000, 1} };
-	floor->indices = { 0, 1, 2, 0, 2, 3 };
-	floor->textureCoordinates = { { 1, 1 }, { 1, 0 }, { 0, 0 }, { 0, 1 } };
-	floor->material.albedo = { 0.0f, 1.0f, 0.0f };
-	floor->material.kd = 1.0f;
-	floor->material.ks = 0.01f;
-	floor->material.shininess = 0.0f;
+	floor->loadFromFile("resources/floor.obj");
+	floor->material.loadFromFile("resources/floor.mtl");
 	floor->texture.loadFromFile("resources/texture.png");
 	scene.objects.push_back(std::move(floor));
 	scene.floorLevel = -200;
@@ -297,7 +290,6 @@ Scene Scene::createShortTunnelScene()
 	scene.objects.push_back(std::move(tunnel));
 	/*********************************************************/
 
-
 	/************************* Lights ************************/
 	Light l2({ 650, 70,-700, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l2);
@@ -349,7 +341,7 @@ Scene Scene::createLongTunnelScene()
 					  { 495, -205, -595, 1 }, { 805, -205, -595, 1 }, { 495, 105, -595, 1 }, { 805, 105, -595, 1 } };
 	tunnel->indices = { 0, 1, 2, 1, 3, 2, 4, 0, 2, 4, 2, 6, 5, 4, 6, 5, 6, 7, 5, 3, 1, 5, 7, 3, 6, 2, 7, 2, 3, 7, 5, 1, 0, 4, 5, 0 };
 	tunnel->warpDirection = { 0.0f, 0.0f, -1.0f, 0.0f };
-	tunnel->intensity = 0.7f;
+	tunnel->intensity = 0.8f;
 	tunnel->compressed = false;
 	scene.objects.push_back(std::move(tunnel));
 	/*********************************************************/
@@ -565,10 +557,7 @@ void Scene::preProcessScene()
 		// Primitive assembly
 		object->assembleTriangles();
 
-		// Create texture mapping
-		object->createTextureMapping();
-
-		// Construst BVH on object
+		// Construct BVH on object
 		object->buildAABB();
 	}
 }

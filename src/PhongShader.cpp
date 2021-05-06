@@ -26,12 +26,21 @@ glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::v
 
     const glm::vec4 hitNormal = { glm::normalize(glm::cross(edge1, edge2)), 0.0f };
 
-    const glm::vec2 textureCoordinates = (*hitModel.textureCoordinateMapping.at(&hitTriangle.v1)) * (1 - u - v)
-                                       + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * u
-                                       + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * v;
+    glm::vec3 albedoColor(0.0f);
 
-    sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * hitModel.texture.getSize().x, textureCoordinates.y * hitModel.texture.getSize().y);
-    glm::vec3 albedoColor = glm::vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+    if (!hitModel.textureCoordinateMapping.empty())
+    {
+        const glm::vec2 textureCoordinates = (*hitModel.textureCoordinateMapping.at(&hitTriangle.v1)) * (1 - u - v)
+            + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * u
+            + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * v;
+
+        sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * hitModel.texture.getSize().x, textureCoordinates.y * hitModel.texture.getSize().y);
+        albedoColor = glm::vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+    }
+    else
+    {
+        albedoColor = hitModel.material.albedo;
+    }
 
     glm::vec3 diffuse(0.0f);
     glm::vec3 specular(0.0f);
@@ -65,7 +74,7 @@ glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::v
         specular += visible * lightAmount * glm::pow(glm::max(0.0f, glm::dot(R, { -ray.direction })), hitModel.material.shininess);
     }
         
-    hitColor = diffuse * hitModel.material.kd + specular * hitModel.material.ks;
+    hitColor = diffuse * hitModel.material.kd + specular * hitModel.material.ks + glm::vec3(10.0f, 10.0f, 10.0f) * hitModel.material.ka;
 
     return glm::clamp(hitColor, 0.0f, 255.0f);
 }
