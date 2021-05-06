@@ -34,7 +34,7 @@ NoEucEngine::NoEucEngine() :
 	texture.create(width, height);
 	renderedImage.setTexture(texture);
 
-	font.loadFromFile("resources/arial.ttf");
+	font.loadFromFile("resources/opensans.ttf");
 	fpsText.setFont(font);
 	fpsText.setCharacterSize(18);
 	fpsText.setFillColor(sf::Color::Red);
