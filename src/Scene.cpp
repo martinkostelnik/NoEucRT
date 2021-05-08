@@ -16,8 +16,6 @@
 #include "ShrinkTunnel.hpp"
 #include "RotationTunnel.hpp"
 
-#include <iostream>
-
 Scene::Scene() :
 	objects(),
 	mainCamera(),
@@ -26,10 +24,10 @@ Scene::Scene() :
 {
 }
 
-Scene Scene::createBaseScene()
+Scene Scene::create3DPortalScene()
 {
 	Scene scene;
-	scene.name = "Basic scene";
+	scene.name = "3D Portal scene";
 	scene.floorLevel = -200;
 
 	/************************ Objects ************************/
@@ -43,6 +41,12 @@ Scene Scene::createBaseScene()
 	floor->material.loadFromFile("resources/diffuseMaterial.mtl");
 	floor->texture.loadFromFile("resources/texture.png");
 	scene.objects.push_back(std::move(floor));
+	/*********************************************************/
+
+	/************************ Portals ************************/
+	std::unique_ptr<Portal> portal { new Portal };
+	portal->loadFromFile("resources/portal3d.obj");
+	scene.objects.push_back(std::move(portal));
 	/*********************************************************/
 
 	/************************* Lights ************************/
@@ -63,90 +67,34 @@ Scene Scene::createPortalScene()
 {
 	Scene scene;
 
-	scene.name = "Simple portal";
+	scene.name = "Simple portal scene";
+	scene.floorLevel = -100.0;
 
 	/************************ Objects ************************/
-	Model floor1(Model::Type::Euclidean);
-	floor1.vertices = { {-400, -100, 100, 1}, {-400, -100, -600, 1}, {400, -100, 100, 1}, {400, -100, -600, 1} };
-	floor1.indices = { 0, 2, 1, 2, 3, 1 };
-	floor1.material.albedo = { 0.0f, 1.0f, 0.0f };
-	floor1.material.kd = 1.0f;
-	floor1.material.ks = 0.001f;
-	floor1.material.shininess = 15.0f;
-	scene.objects.push_back(std::make_unique<Model>(floor1));
-	scene.floorLevel = -100;
+	std::unique_ptr<Model> floor1{ new Model(Model::Type::Euclidean) };
+	floor1->loadFromFile("resources/portalFloor1.obj");
+	floor1->material.loadFromFile("resources/diffuseMaterial.mtl");
+	scene.objects.push_back(std::move(floor1));
 
-	Model leftWall(Model::Type::Euclidean);
-	leftWall.vertices = { {-300, -100, -400, 1}, {-300, -100, -500, 1}, {-300, 150, -400, 1}, {-300, 150, -500, 1} };
-	leftWall.indices = { 0, 3, 1, 0, 2, 3 };
-	leftWall.material.albedo = { 0.0f, 1.0f, 0.0f };
-	leftWall.material.kd = 1.0f;
-	leftWall.material.ks = 0.01f;
-	leftWall.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(leftWall));
+	std::unique_ptr<Model> floor2{ new Model(Model::Type::Euclidean) };
+	floor2->loadFromFile("resources/portalFloor2.obj");
+	floor2->material.loadFromFile("resources/diffuseMaterial.mtl");
+	scene.objects.push_back(std::move(floor2));
 
-	Model frontWall1(Model::Type::Euclidean);
-	frontWall1.vertices = { {-300, -100, -400, 1}, {-300, 50, -400, 1}, {-50, -100, -400, 1}, {-50, 50, -400, 1} };
-	frontWall1.indices = { 0, 2, 1, 2, 3, 1 };
-	frontWall1.material.albedo = { 0.0f, 1.0f, 0.0f };
-	frontWall1.material.kd = 1.0f;
-	frontWall1.material.ks = 0.01f;
-	frontWall1.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(frontWall1));
+	std::unique_ptr<Model> midWall{ new Model(Model::Type::Euclidean) };
+	midWall->loadFromFile("resources/simpleMidWall.obj");
+	midWall->material.loadFromFile("resources/diffuseMaterial.mtl");
+	scene.objects.push_back(std::move(midWall));
 
-	Model frontWall2(Model::Type::Euclidean);
-	frontWall2.vertices = { {50, -100, -400, 1}, {50, 50, -400, 1}, {300, -100, -400, 1}, {300, 50, -400, 1} };
-	frontWall2.indices = { 0, 2, 1, 2, 3, 1 };
-	frontWall2.material.albedo = { 0.0f, 1.0f, 0.0f };
-	frontWall2.material.kd = 1.0f;
-	frontWall2.material.ks = 0.01f;
-	frontWall2.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(frontWall2));
+	std::unique_ptr<Model> frontWall{ new Model(Model::Type::Euclidean) };
+	frontWall->loadFromFile("resources/simpleFrontWall.obj");
+	frontWall->material.loadFromFile("resources/diffuseMaterial.mtl");
+	scene.objects.push_back(std::move(frontWall));
 
-	Model rightWall(Model::Type::Euclidean);
-	rightWall.vertices = { {300, -100, -400, 1}, {300, -100, -500, 1}, {300, 150, -400, 1}, {300, 150, -500, 1} };
-	rightWall.indices = { 0, 1, 2, 1, 3, 2 };
-	rightWall.material.albedo = { 0.0f, 1.0f, 0.0f };
-	rightWall.material.kd = 1.0f;
-	rightWall.material.ks = 0.01f;
-	rightWall.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(rightWall));
-
-	Model frontWall3(Model::Type::Euclidean);
-	frontWall3.vertices = { {-300, 50, -400, 1}, {-300, 150, -400, 1}, {300, 50, -400, 1}, {300, 150, -400, 1} };
-	frontWall3.indices = { 0, 2, 1, 2, 3, 1 };
-	frontWall3.material.albedo = { 0.0f, 1.0f, 0.0f };
-	frontWall3.material.kd = 1.0f;
-	frontWall3.material.ks = 0.01f;
-	frontWall3.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(frontWall3));
-
-	Model topWall(Model::Type::Euclidean);
-	topWall.vertices = { {-300, 150, -400, 1}, {-300, 150, -500, 1}, {300, 150, -400, 1}, {300, 150, -500, 1} };
-	topWall.indices = { 0, 2, 1, 2, 3, 1 };
-	topWall.material.albedo = { 0.0f, 1.0f, 0.0f };
-	topWall.material.kd = 1.0f;
-	topWall.material.ks = 0.01f;
-	topWall.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(topWall));
-
-	Model backWall(Model::Type::Euclidean);
-	backWall.vertices = { {-300, -100, -500, 1}, {-300, 150, -500, 1}, {300, -100, -500, 1}, {300, 150, -500, 1} };
-	backWall.indices = { 2, 0, 3, 0, 1, 3 };
-	backWall.material.albedo = { 0.0f, 1.0f, 0.0f };
-	backWall.material.kd = 1.0f;
-	backWall.material.ks = 0.01f;
-	backWall.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(backWall));
-
-	Model floor2(Model::Type::Euclidean);
-	floor1.vertices = { {9600, -100, 100, 1}, {9600, -100, -600, 1}, {10400, -100, 100, 1}, {10400, -100, -600, 1} };
-	floor1.indices = { 0, 2, 1, 2, 3, 1 };
-	floor1.material.albedo = { 0.0f, 1.0f, 0.0f };
-	floor1.material.kd = 1.0f;
-	floor1.material.ks = 0.01f;
-	floor1.material.shininess = 25.0f;
-	scene.objects.push_back(std::make_unique<Model>(floor1));
+	std::unique_ptr<Model> backWall{ new Model(Model::Type::Euclidean) };
+	backWall->loadFromFile("resources/simpleBackWall.obj");
+	backWall->material.loadFromFile("resources/diffuseMaterial.mtl");
+	scene.objects.push_back(std::move(backWall));
 	/*********************************************************/
 
 	/************************ Portals ************************/
@@ -161,7 +109,6 @@ Scene Scene::createPortalScene()
 
 	Light l1({ -175, -25, -380, 0.0f }, 2000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
-
 	/*********************************************************/
 
 	return scene;

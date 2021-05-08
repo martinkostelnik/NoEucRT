@@ -33,7 +33,7 @@ public:
 	Skybox skybox;
 	float floorLevel;
 
-	static Scene createBaseScene();
+	static Scene create3DPortalScene();
 	static Scene createPortalScene();
 	static Scene createInfiniteTunnelScene();
 	static Scene createShortTunnelScene();

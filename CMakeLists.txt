@@ -4,7 +4,7 @@ project(NoEucRT)
 
 set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SFML-2.5.1/lib/cmake/SFML")
 set(SFML_STATIC_LIBRARIES TRUE)
-find_package(SFML 2.5 COMPONENTS graphics window REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics window main REQUIRED)
 
 set(glm_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glm-0.9.9.8/cmake/glm)
 find_package(glm REQUIRED)
