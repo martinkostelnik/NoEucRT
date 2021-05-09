@@ -173,6 +173,9 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 			}
 			else if (object->type == Model::Type::ShrinkTunnel) // We are inside shrinking tunnel
 			{
+				// Undo X axis rotation
+				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(-camera.Xrotation), { 1, 0, 0 });
+
 				auto tunnel = static_cast<ShrinkTunnel*>(object.get());
 				glm::vec4 localDirection = glm::inverse(camera.toWorld) * tunnel->direction;
 
@@ -194,9 +197,15 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 				{
 					distance = 0.0f;
 				}
+
+				// Reapply X axis rotation
+				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(camera.Xrotation), { 1, 0, 0 });
 			}
 			else if (object->type == Model::Type::RotationTunnel) // We are inside rotation tunnel
 			{
+				// Undo X axis rotation
+				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(-camera.Xrotation), { 1, 0, 0 });
+
 				auto tunnel = static_cast<RotationTunnel*>(object.get());
 				glm::vec4 localDirection = glm::inverse(camera.toWorld) * tunnel->direction;
 
@@ -208,6 +217,9 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 
 				camera.toWorld = glm::rotate(camera.toWorld, rotation, tunnel->axes);
 				collisionRay.direction = glm::normalize(camera.toWorld * direction);
+
+				// Reapply X axis rotation
+				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(camera.Xrotation), { 1, 0, 0 });
 			}
 		}
 
