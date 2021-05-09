@@ -24,7 +24,7 @@ NoEucEngine::NoEucEngine() :
 	width(800),
 	height(600),
 	window(sf::VideoMode(width, height, 24), "Non-Euclidean Ray Tracer", sf::Style::None),
-	scene(Scene::createBaseScene()),
+	scene(Scene::create3DPortalScene()),
 	renderer(width, height, scene.mainCamera.fov),
 	texture(),
 	renderedImage(),
@@ -34,7 +34,7 @@ NoEucEngine::NoEucEngine() :
 	texture.create(width, height);
 	renderedImage.setTexture(texture);
 
-	font.loadFromFile("resources/arial.ttf");
+	font.loadFromFile("resources/opensans.ttf");
 	fpsText.setFont(font);
 	fpsText.setCharacterSize(18);
 	fpsText.setFillColor(sf::Color::Red);
@@ -115,7 +115,7 @@ void NoEucEngine::handleEvents()
 			}
 			else if (event.key.code == sf::Keyboard::Num1)
 			{
-				scene = Scene::createBaseScene();
+				scene = Scene::create3DPortalScene();
 				scene.preProcessScene();
 				sceneName.setString(scene.name);
 			}

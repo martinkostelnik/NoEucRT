@@ -17,14 +17,30 @@ LambertianShader::LambertianShader()
 {
 }
 
-glm::vec3 LambertianShader::getColor(const Ray& ray, const Scene& scene, const glm::vec4& hitPoint, const Model& hitModel, const Triangle& hitTriangle) const
+glm::vec3 LambertianShader::getColor(const Ray& ray, const Scene& scene, const glm::vec4& hitPoint, const Model& hitModel, const Triangle& hitTriangle, const float u, const float v) const
 {
     glm::vec3 hitColor(0.0f);
 
     const glm::vec3 edge1 = { hitTriangle.v2.x - hitTriangle.v1.x, hitTriangle.v2.y - hitTriangle.v1.y, hitTriangle.v2.z - hitTriangle.v1.z };
     const glm::vec3 edge2 = { hitTriangle.v3.x - hitTriangle.v1.x, hitTriangle.v3.y - hitTriangle.v1.y, hitTriangle.v3.z - hitTriangle.v1.z };
-    
+
     const glm::vec4 hitNormal = { glm::normalize(glm::cross(edge1, edge2)), 0.0f };
+
+    glm::vec3 albedoColor(0.0f);
+
+    if (!hitModel.textureCoordinateMapping.empty() && hitModel.texture.getSize().x != 0)
+    {
+        const glm::vec2 textureCoordinates = (*hitModel.textureCoordinateMapping.at(&hitTriangle.v1)) * (1 - u - v)
+                                           + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * u
+                                           + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * v;
+
+        sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * (hitModel.texture.getSize().x - 1), textureCoordinates.y * (hitModel.texture.getSize().y - 1));
+        albedoColor = glm::vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+    }
+    else
+    {
+        albedoColor = hitModel.material.albedo;
+    }
 
     #pragma omp parallel for
     for (int i = 0; i < scene.lights.size(); i++)
@@ -49,7 +65,7 @@ glm::vec3 LambertianShader::getColor(const Ray& ray, const Scene& scene, const g
         const float bias = 0.001f;
         Ray shadowRay(hitPoint + hitNormal * bias, glm::normalize(lightDirection));
 
-        hitColor += float(shadowRay.seesLight(scene.lights[i], scene)) * hitModel.material.albedo * lightAmount;
+        hitColor += float(shadowRay.seesLight(scene.lights[i], scene)) * albedoColor * lightAmount;
     }
 
     return glm::clamp(hitColor, 0.0f, 255.0f);

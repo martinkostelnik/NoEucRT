@@ -26,6 +26,8 @@ public:
 private:
 	sf::Clock movementClock;
 	bool inside;
+	float shrinkEntryHeight;
+	float shrinkEntrySpeed;
 
 	void handleCollision(const Scene& scene, Camera& camera, glm::vec4& direction, float& distance);
 	void handleRotation(const sf::RenderWindow& window, const Scene& scene, Camera& camera) const;

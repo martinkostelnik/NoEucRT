@@ -19,14 +19,11 @@
 #include "ShrinkTunnel.hpp"
 #include "RotationTunnel.hpp"
 
-/************ DELETE THIS ************/
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
-/*************************************/
-
 MovementHandler::MovementHandler() :
 	movementClock(),
-	inside(false)
+	inside(false),
+	shrinkEntryHeight(0.0f),
+	shrinkEntrySpeed(0.0f)
 {
 }
 
@@ -102,20 +99,23 @@ void MovementHandler::handleTranslation(const Scene& scene, Camera& camera)
 		direction.x += 1.0f;
 	}
 
-	// Collision handling. Collision can only happen when moving
 	if (direction.x || direction.z)
 	{
+		// Normalize direction
+		direction = glm::normalize(direction);
+
+		// Collision handling. Collision can only happen when moving
 		handleCollision(scene, camera, direction, distance);
+
+		// Move camera
+		camera.toWorld = glm::translate(camera.toWorld,
+			{ direction.x * distance,
+			  direction.z * glm::sin(glm::radians(camera.Xrotation)) * distance,
+			  direction.z * glm::cos(glm::radians(camera.Xrotation)) * distance });
+
+		// Recalculate camera position in world space
+		camera.position = camera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
-
-	// Move camera
-	camera.toWorld = glm::translate(camera.toWorld,
-		{ direction.x * distance,
-		  direction.z * glm::sin(glm::radians(camera.Xrotation)) * distance,
-		  direction.z * glm::cos(glm::radians(camera.Xrotation)) * distance });
-
-	// Recalculate camera position in world space
-	camera.position = camera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::vec4& direction, float& distance)
@@ -180,14 +180,13 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 
 				float shrinkFraction = distanceToShrink / tunnel->length;
 
-				float yDistance = (camera.position.y - scene.floorLevel) * shrinkFraction * tunnel->finalSize;
+				float yDistance = (shrinkEntryHeight - scene.floorLevel) * shrinkFraction * (1 - tunnel->finalSize);
 
 				// Test for collision, this has to been done here before actual collision checks
 				if (camera.position.y - yDistance < tunnel->ceiling - 5 && camera.position.y - yDistance > scene.floorLevel + 5)
 				{
 					// Change speed appropriately to size
-					camera.speed *= 1 - yDistance / (camera.position.y - scene.floorLevel);
-
+					camera.speed -= shrinkFraction * (shrinkEntrySpeed - (shrinkEntrySpeed * tunnel->finalSize));
 					camera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * camera.toWorld;
 					camera.position = camera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				}
@@ -245,13 +244,16 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 						}
 						else if (object->type == Model::Type::ShrinkTunnel)
 						{
+							shrinkEntryHeight = camera.position.y;
+							shrinkEntrySpeed = camera.speed;
+
 							auto tunnel = static_cast<ShrinkTunnel*>(object.get());
 							float distanceInTunnel = inside ? hitDistance : distance - hitDistance;
 
 							float a = distanceInTunnel * glm::dot(glm::normalize(glm::vec2(worldDirection.x, worldDirection.z)), glm::normalize(glm::vec2(tunnel->direction.x, tunnel->direction.z)));
 							float f = a / tunnel->length;
 
-							float yDistance = (camera.position.y - scene.floorLevel) * f * tunnel->finalSize;
+							float yDistance = (shrinkEntryHeight - scene.floorLevel) * f * (1 - tunnel->finalSize);
 
 							camera.toWorld = glm::translate(glm::mat4(1.0f), { 0.0f, -yDistance, 0.0f }) * camera.toWorld;
 							camera.position = camera.toWorld * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);

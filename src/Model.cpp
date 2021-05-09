@@ -11,7 +11,6 @@
 
 #include "Model.hpp"
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
@@ -95,34 +94,46 @@ void Model::loadFromFile(const std::string fileName)
 
 		lineStream >> type;
 
-		if (type == "v" || type == "V") // Reading vertex
-		{
-			float x = 0.0,
-				  y = 0.0,
-			      z = 0.0;
+		// Convert to lowercase
+		std::transform(type.begin(), type.end(), type.begin(), [](unsigned char c) { return std::tolower(c); });
 
-			lineStream >> x >> y >> z;
-			vertices.push_back({ x, y, z, 1 });
+		if (type == "v") // Reading vertex
+		{
+			glm::vec4 vertex { 0.0f, 0.0f, 0.0f, 1.0f };
+
+			lineStream >> vertex.x >> vertex.y >> vertex.z;
+			vertices.push_back(vertex);
 		}
-		else if (type == "f" || type == "F") // Reading face
+		else if (type == "vt") // Reading texture coordinate
 		{
-			std::string f1, f2, f3;
+			glm::vec2 coords { 0.0f, 0.0f };
 
-			lineStream >> f1 >> f2 >> f3;
-
-			indices.push_back(stoi(f1) - 1);
-			indices.push_back(stoi(f2) - 1);
-			indices.push_back(stoi(f3) - 1);
+			lineStream >> coords.x >> coords.y;
+			textureCoordinates.push_back(coords);
 		}
-		else if (type == "vn") // Reading vertex normal
+		else if (type == "f") // Reading face
 		{
-			float x = 0.0,
-				  y = 0.0,
-				  z = 0.0;
+			std::string values[3];
 
-			lineStream >> x >> y >> z;
-			vertexNormals.push_back({ x, y, z });
+			lineStream >> values[0] >> values[1] >> values[2];
+			for (size_t i = 0; i < 3; i++)
+			{
+				size_t delPos = values[i].find('/');
+
+				if (delPos == std::string::npos) // Char / not found, we have no texture coordinates
+				{
+					indices.push_back(size_t(stoi(values[i])) - 1);
+				}
+				else // Load texture coordinates as well
+				{
+					size_t vIndex = size_t(stoi(values[i].substr(0, delPos))) - 1;
+					size_t tIndex = size_t(stoi(values[i].substr(delPos + 1))) - 1;
+					indices.push_back(vIndex);
+					textureCoordinateMapping.insert({ &vertices[vIndex], &textureCoordinates[tIndex] });
+				}
+			}
 		}
 	}
+
 	fileHandle.close();
 }

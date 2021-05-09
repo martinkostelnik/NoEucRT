@@ -19,6 +19,8 @@ class ShrinkTunnel : public Model
 public:
 	ShrinkTunnel();
 
+	void loadFromFile(const std::string fileName);
+
 	glm::vec4 direction;
 	float finalSize;
 	float length;

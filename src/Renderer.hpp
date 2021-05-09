@@ -33,6 +33,8 @@ private:
 		const Triangle* hitTriangle;
 		glm::vec4 hitPoint;
 		Ray ray;
+		float u;
+		float v;
 	};
 
 	castRayData castRay(const Ray& ray, const Scene& scene, const bool warped = false, const glm::vec4& prevDirection = { 0.0f, 0.0f, 0.0f, 0.0f }) const;

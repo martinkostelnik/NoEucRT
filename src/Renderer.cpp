@@ -15,6 +15,8 @@
 #include "Portal.hpp"
 #include "WarpedTunnel.hpp"
 
+#include<iostream>
+
 Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
 	width(width),
 	height(height),
@@ -51,18 +53,20 @@ void Renderer::precomputeRays()
 
 Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, const bool warped, const glm::vec4& prevDirection) const
 {
-	castRayData data = { false, 0, nullptr, {0.0f, 0.0f, 0.0f, 1.0f}, ray };
+	castRayData data = { false, 0, nullptr, {0.0f, 0.0f, 0.0f, 1.0f}, ray, 0.0f, 0.0f };
 	float distance = 0.0f;
 	float minDistance = std::numeric_limits<float>::infinity();
+	float u = 0.0f;
+	float v = 0.0f;
 
-	#pragma omp parallel for private(distance)
+	#pragma omp parallel for private(distance, u, v)
 	for (int i = 0; i < scene.objects.size(); i++)
 	{
 		if (ray.intersectsAABB(scene.objects[i]->boundingBox))
 		{
 			for (const auto& triangle : scene.objects[i]->triangles)
 			{
-				if (ray.intersectsTriangle(triangle, distance)) // distance is out parameter
+				if (ray.intersectsTriangle(triangle, distance, &u, &v)) // distance is out parameter
 				{
 					data.hit = true;
 
@@ -71,6 +75,8 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 						minDistance = distance;
 						data.hitObjectIndex = i;
 						data.hitTriangle = &triangle;
+						data.u = u;
+						data.v = v;
 					}
 				}
 			}
@@ -129,7 +135,8 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 				data = castRay(leavingRay, scene);
 			}
 		}
-		else if (scene.objects[data.hitObjectIndex]->type == Model::Type::ShrinkTunnel || scene.objects[data.hitObjectIndex]->type == Model::Type::RotationTunnel)
+		else if (scene.objects[data.hitObjectIndex]->type == Model::Type::ShrinkTunnel
+				 || scene.objects[data.hitObjectIndex]->type == Model::Type::RotationTunnel)
 		{
 			data.hit = false;
 			Ray r(data.hitPoint + ray.direction * bias, ray.direction);
@@ -202,7 +209,7 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 
 			if (data.hit) // We hit something, invoke shader and set color
 			{
-				color = shader.getColor(data.ray, scene, data.hitPoint, *scene.objects[data.hitObjectIndex], *data.hitTriangle);
+				color = shader.getColor(data.ray, scene, data.hitPoint, *scene.objects[data.hitObjectIndex], *data.hitTriangle, data.u, data.v);
 			}
 			else // We hit nothing
 			{
