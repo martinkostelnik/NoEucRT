@@ -28,13 +28,13 @@ glm::vec3 PhongShader::getColor(const Ray& ray, const Scene& scene, const glm::v
 
     glm::vec3 albedoColor(0.0f);
 
-    if (!hitModel.textureCoordinateMapping.empty())
+    if (!hitModel.textureCoordinateMapping.empty() && hitModel.texture.getSize().x != 0)
     {
         const glm::vec2 textureCoordinates = (*hitModel.textureCoordinateMapping.at(&hitTriangle.v1)) * (1 - u - v)
-            + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * u
-            + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * v;
+                                             + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * u
+                                             + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * v;
 
-        sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * hitModel.texture.getSize().x, textureCoordinates.y * hitModel.texture.getSize().y);
+        sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * (hitModel.texture.getSize().x - 1), textureCoordinates.y * (hitModel.texture.getSize().y - 1));
         albedoColor = glm::vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
     }
     else

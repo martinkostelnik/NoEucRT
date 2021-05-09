@@ -34,7 +34,7 @@ glm::vec3 LambertianShader::getColor(const Ray& ray, const Scene& scene, const g
                                            + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v2)) * u
                                            + (*hitModel.textureCoordinateMapping.at(&hitTriangle.v3)) * v;
 
-        sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * hitModel.texture.getSize().x, textureCoordinates.y * hitModel.texture.getSize().y);
+        sf::Color color = hitModel.texture.getPixel(textureCoordinates.x * (hitModel.texture.getSize().x - 1), textureCoordinates.y * (hitModel.texture.getSize().y - 1));
         albedoColor = glm::vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
     }
     else

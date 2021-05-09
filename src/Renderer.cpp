@@ -15,6 +15,8 @@
 #include "Portal.hpp"
 #include "WarpedTunnel.hpp"
 
+#include<iostream>
+
 Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
 	width(width),
 	height(height),
@@ -54,15 +56,17 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 	castRayData data = { false, 0, nullptr, {0.0f, 0.0f, 0.0f, 1.0f}, ray, 0.0f, 0.0f };
 	float distance = 0.0f;
 	float minDistance = std::numeric_limits<float>::infinity();
+	float u = 0.0f;
+	float v = 0.0f;
 
-	#pragma omp parallel for private(distance)
+	#pragma omp parallel for private(distance, u, v)
 	for (int i = 0; i < scene.objects.size(); i++)
 	{
 		if (ray.intersectsAABB(scene.objects[i]->boundingBox))
 		{
 			for (const auto& triangle : scene.objects[i]->triangles)
 			{
-				if (ray.intersectsTriangle(triangle, distance, &data.u, &data.v)) // distance is out parameter
+				if (ray.intersectsTriangle(triangle, distance, &u, &v)) // distance is out parameter
 				{
 					data.hit = true;
 
@@ -71,6 +75,8 @@ Renderer::castRayData Renderer::castRay(const Ray& ray, const Scene& scene, cons
 						minDistance = distance;
 						data.hitObjectIndex = i;
 						data.hitTriangle = &triangle;
+						data.u = u;
+						data.v = v;
 					}
 				}
 			}

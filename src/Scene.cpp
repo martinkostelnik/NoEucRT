@@ -34,12 +34,13 @@ Scene Scene::create3DPortalScene()
 	std::unique_ptr<Model> testingCube { new Model(Model::Type::Euclidean) };
 	testingCube->loadFromFile("resources/testingCube.obj");
 	testingCube->material.loadFromFile("resources/phongMaterial.mtl");
+	testingCube->texture.loadFromFile("resources/wall.jpg");
 	scene.objects.push_back(std::move(testingCube));
 
 	std::unique_ptr<Model> floor { new Model(Model::Type::Euclidean) };
 	floor->loadFromFile("resources/floor.obj");
 	floor->material.loadFromFile("resources/diffuseMaterial.mtl");
-	floor->texture.loadFromFile("resources/texture.png");
+	floor->texture.loadFromFile("resources/tilesFloor.jpg");
 	scene.objects.push_back(std::move(floor));
 	/*********************************************************/
 
@@ -50,14 +51,14 @@ Scene Scene::create3DPortalScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l2({ 650, 70,-700, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l2);
-
-	Light l1({ 650, 70, 100, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l1({ 100.0f, 100.0f, -150.0f, 1.0f }, 7000.0, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
 
-	Light sun({ 0, -1, 0, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
-	scene.lights.push_back(sun);
+	Light sun1(glm::normalize(glm::vec4(-1.0f, -1.0f, -1.0f, 0.0f)), 80.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun1);
+
+	Light sun2(glm::normalize(glm::vec4(1.0f, -1.0f, 1.0f, 0.0f)), 80.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun2);
 	/*********************************************************/
 
 	return scene;
@@ -74,26 +75,31 @@ Scene Scene::createPortalScene()
 	std::unique_ptr<Model> floor1{ new Model(Model::Type::Euclidean) };
 	floor1->loadFromFile("resources/portalFloor1.obj");
 	floor1->material.loadFromFile("resources/diffuseMaterial.mtl");
+	floor1->texture.loadFromFile("resources/tilesFloor2.jpg");
 	scene.objects.push_back(std::move(floor1));
 
 	std::unique_ptr<Model> floor2{ new Model(Model::Type::Euclidean) };
 	floor2->loadFromFile("resources/portalFloor2.obj");
 	floor2->material.loadFromFile("resources/diffuseMaterial.mtl");
+	floor2->texture.loadFromFile("resources/tilesFloor2.jpg");
 	scene.objects.push_back(std::move(floor2));
 
 	std::unique_ptr<Model> midWall{ new Model(Model::Type::Euclidean) };
 	midWall->loadFromFile("resources/simpleMidWall.obj");
 	midWall->material.loadFromFile("resources/diffuseMaterial.mtl");
+	midWall->texture.loadFromFile("resources/simplePortalTexture.jpg");
 	scene.objects.push_back(std::move(midWall));
 
 	std::unique_ptr<Model> frontWall{ new Model(Model::Type::Euclidean) };
 	frontWall->loadFromFile("resources/simpleFrontWall.obj");
 	frontWall->material.loadFromFile("resources/diffuseMaterial.mtl");
+	frontWall->texture.loadFromFile("resources/simplePortalTexture.jpg");
 	scene.objects.push_back(std::move(frontWall));
 
 	std::unique_ptr<Model> backWall{ new Model(Model::Type::Euclidean) };
 	backWall->loadFromFile("resources/simpleBackWall.obj");
 	backWall->material.loadFromFile("resources/diffuseMaterial.mtl");
+	backWall->texture.loadFromFile("resources/simplePortalTexture.jpg");
 	scene.objects.push_back(std::move(backWall));
 	/*********************************************************/
 
@@ -104,11 +110,14 @@ Scene Scene::createPortalScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light sun1({ 0, -1, -1, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
+	Light sun1(glm::normalize(glm::vec4(-1.0f, -1.0f, -1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
 	scene.lights.push_back(sun1);
 
-	Light l1({ -175, -25, -380, 0.0f }, 2000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l1);
+	Light sun2(glm::normalize(glm::vec4(1.0f, -1.0f, 1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun2);
+
+	Light l2({ 10000.0f, 100.0f, -250.0f, 0.0f }, 20000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	scene.lights.push_back(l2);
 	/*********************************************************/
 
 	return scene;
@@ -124,6 +133,7 @@ Scene Scene::createInfiniteTunnelScene()
 	std::unique_ptr<Model> tunnel{ new Model(Model::Type::Euclidean) };
 	tunnel->loadFromFile("resources/infiniteTunnel.obj");
 	tunnel->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnel->texture.loadFromFile("resources/rock.jpg");
 	scene.objects.push_back(std::move(tunnel));
 	/*********************************************************/
 
@@ -138,17 +148,11 @@ Scene Scene::createInfiniteTunnelScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l1({ -350, -150, 300, 0.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l1({ -200.0f, 0.0f, -400.0f, 0.0f }, 15000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
 
-	Light l2({ 350, -150, 300, 0.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l2({ 200.0f, 0.0f, -400.0f, 0.0f }, 15000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l2);
-	
-	Light l3({ -350, -150, -1100, 0.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l3);
-	
-	Light l4({ 350, -150, -1100, 0.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l4);
 	/*********************************************************/
 	return scene;
 }
@@ -162,14 +166,33 @@ Scene Scene::createShortTunnelScene()
 	/************************ Objects ************************/
 	std::unique_ptr<Model> floor{ new Model(Model::Type::Euclidean) };
 	floor->loadFromFile("resources/tunnelFloor.obj");
-	floor->material.loadFromFile("resources/diffuseMaterial.mtl");
+	floor->material.loadFromFile("resources/phongMaterial.mtl");
+	floor->texture.loadFromFile("resources/tiles.jpg");
 	scene.objects.push_back(std::move(floor));
 
+	std::unique_ptr<Model> tunnelFront{ new Model(Model::Type::Euclidean) };
+	tunnelFront->loadFromFile("resources/tunnelFront.obj");
+	tunnelFront->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelFront->texture.loadFromFile("resources/tiles3.jpg");
+	scene.objects.push_back(std::move(tunnelFront));
+
+	std::unique_ptr<Model> tunnelBack{ new Model(Model::Type::Euclidean) };
+	tunnelBack->loadFromFile("resources/tunnelBack.obj");
+	tunnelBack->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelBack->texture.loadFromFile("resources/tiles3.jpg");
+	scene.objects.push_back(std::move(tunnelBack));
 
 	std::unique_ptr<Model> tunnelOuter{ new Model(Model::Type::Euclidean) };
-	tunnelOuter->loadFromFile("resources/tunnel.obj");
+	tunnelOuter->loadFromFile("resources/tunnelOuter.obj");
 	tunnelOuter->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelOuter->texture.loadFromFile("resources/tiles3.jpg");
 	scene.objects.push_back(std::move(tunnelOuter));
+
+	std::unique_ptr<Model> tunnelIn{ new Model(Model::Type::Euclidean) };
+	tunnelIn->loadFromFile("resources/tunnelIn.obj");
+	tunnelIn->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelIn->texture.loadFromFile("resources/tiles3.jpg");
+	scene.objects.push_back(std::move(tunnelIn));
 	/*********************************************************/
 
 	/************************* Tunnel ************************/
@@ -179,14 +202,17 @@ Scene Scene::createShortTunnelScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l2({ 650, 70,-700, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l2);
-
-	Light l1({ 650, 70, 100, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l1({ 650.0f, 55.0f, 100.0f, 1.0f }, 10000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
 
-	Light sun({ 0, -1, 0, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
-	scene.lights.push_back(sun);
+	Light l2({ 650.0f, 55.0f, -700.0f, 1.0f }, 10000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	scene.lights.push_back(l2);
+
+	Light sun1(glm::normalize(glm::vec4(-1.0f, -1.0f, -1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun1);
+
+	Light sun2(glm::normalize(glm::vec4(1.0f, -1.0f, 1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun2);
 	/*********************************************************/
 
 	return scene;
@@ -201,13 +227,33 @@ Scene Scene::createLongTunnelScene()
 	/************************ Objects ************************/
 	std::unique_ptr<Model> floor{ new Model(Model::Type::Euclidean) };
 	floor->loadFromFile("resources/tunnelFloor.obj");
-	floor->material.loadFromFile("resources/diffuseMaterial.mtl");
+	floor->material.loadFromFile("resources/phongMaterial.mtl");
+	floor->texture.loadFromFile("resources/tiles.jpg");
 	scene.objects.push_back(std::move(floor));
 
+	std::unique_ptr<Model> tunnelFront{ new Model(Model::Type::Euclidean) };
+	tunnelFront->loadFromFile("resources/tunnelFront.obj");
+	tunnelFront->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelFront->texture.loadFromFile("resources/tiles3.jpg");
+	scene.objects.push_back(std::move(tunnelFront));
+
+	std::unique_ptr<Model> tunnelBack{ new Model(Model::Type::Euclidean) };
+	tunnelBack->loadFromFile("resources/tunnelBack.obj");
+	tunnelBack->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelBack->texture.loadFromFile("resources/tiles3.jpg");
+	scene.objects.push_back(std::move(tunnelBack));
+
 	std::unique_ptr<Model> tunnelOuter{ new Model(Model::Type::Euclidean) };
-	tunnelOuter->loadFromFile("resources/tunnel.obj");
+	tunnelOuter->loadFromFile("resources/tunnelOuter.obj");
 	tunnelOuter->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelOuter->texture.loadFromFile("resources/tiles3.jpg");
 	scene.objects.push_back(std::move(tunnelOuter));
+
+	std::unique_ptr<Model> tunnelIn{ new Model(Model::Type::Euclidean) };
+	tunnelIn->loadFromFile("resources/tunnelIn.obj");
+	tunnelIn->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelIn->texture.loadFromFile("resources/tiles3.jpg");
+	scene.objects.push_back(std::move(tunnelIn));
 	/*********************************************************/
 
 	/************************* Tunnel ************************/
@@ -217,14 +263,17 @@ Scene Scene::createLongTunnelScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l2({ 650, 70,-700, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l2);
-
-	Light l1({ 650, 70, 100, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l1({ 650.0f, 55.0f, 100.0f, 1.0f }, 10000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
 
-	Light sun({ 0, -1, 0, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
-	scene.lights.push_back(sun);
+	Light l2({ 650.0f, 55.0f, -700.0f, 1.0f }, 10000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	scene.lights.push_back(l2);
+
+	Light sun1(glm::normalize(glm::vec4(-1.0f, -1.0f, -1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun1);
+
+	Light sun2(glm::normalize(glm::vec4(1.0f, -1.0f, 1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun2);
 	/*********************************************************/
 
 	return scene;
@@ -240,12 +289,32 @@ Scene Scene::createShrinkScene()
 	std::unique_ptr<Model> floor{ new Model(Model::Type::Euclidean) };
 	floor->loadFromFile("resources/tunnelFloor.obj");
 	floor->material.loadFromFile("resources/diffuseMaterial.mtl");
+	floor->texture.loadFromFile("resources/rocks2.jpg");
 	scene.objects.push_back(std::move(floor));
+
+	std::unique_ptr<Model> tunnelFront{ new Model(Model::Type::Euclidean) };
+	tunnelFront->loadFromFile("resources/shrinkTunnelFront.obj");
+	tunnelFront->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelFront->texture.loadFromFile("resources/bricks.jpg");
+	scene.objects.push_back(std::move(tunnelFront));
+
+	std::unique_ptr<Model> tunnelBack{ new Model(Model::Type::Euclidean) };
+	tunnelBack->loadFromFile("resources/shrinkTunnelBack.obj");
+	tunnelBack->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelBack->texture.loadFromFile("resources/bricks.jpg");
+	scene.objects.push_back(std::move(tunnelBack));
 
 	std::unique_ptr<Model> tunnelOuter{ new Model(Model::Type::Euclidean) };
 	tunnelOuter->loadFromFile("resources/shrinkTunnelOuter.obj");
 	tunnelOuter->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelOuter->texture.loadFromFile("resources/bricks.jpg");
 	scene.objects.push_back(std::move(tunnelOuter));
+
+	std::unique_ptr<Model> tunnelIn{ new Model(Model::Type::Euclidean) };
+	tunnelIn->loadFromFile("resources/shrinkTunnelIn.obj");
+	tunnelIn->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelIn->texture.loadFromFile("resources/bricks.jpg");
+	scene.objects.push_back(std::move(tunnelIn));
 	/*********************************************************/
 
 	/************************* Tunnel ************************/
@@ -255,14 +324,14 @@ Scene Scene::createShrinkScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l2({ 650, 70,-700, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l2);
-
-	Light l1({ 650, 70, 100, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l1({ 650.0f, 70.0f, 100.0f, 1.0f }, 10000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
 
-	Light sun({ 0, -1, 0, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
-	scene.lights.push_back(sun);
+	Light sun1(glm::normalize(glm::vec4(-1.0f, -1.0f, -1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun1);
+
+	Light sun2(glm::normalize(glm::vec4(1.0f, -1.0f, 1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun2);
 	/*********************************************************/
 
 	return scene;
@@ -278,12 +347,32 @@ Scene Scene::createRotatingTunnelScene()
 	std::unique_ptr<Model> floor{ new Model(Model::Type::Euclidean) };
 	floor->loadFromFile("resources/tunnelFloor.obj");
 	floor->material.loadFromFile("resources/diffuseMaterial.mtl");
+	floor->texture.loadFromFile("resources/rocks4.jpg");
 	scene.objects.push_back(std::move(floor));
 
+	std::unique_ptr<Model> tunnelFront{ new Model(Model::Type::Euclidean) };
+	tunnelFront->loadFromFile("resources/tunnelFront.obj");
+	tunnelFront->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelFront->texture.loadFromFile("resources/wall.jpg");
+	scene.objects.push_back(std::move(tunnelFront));
+
+	std::unique_ptr<Model> tunnelBack{ new Model(Model::Type::Euclidean) };
+	tunnelBack->loadFromFile("resources/tunnelBack.obj");
+	tunnelBack->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelBack->texture.loadFromFile("resources/wall.jpg");
+	scene.objects.push_back(std::move(tunnelBack));
+
 	std::unique_ptr<Model> tunnelOuter{ new Model(Model::Type::Euclidean) };
-	tunnelOuter->loadFromFile("resources/tunnel.obj");
+	tunnelOuter->loadFromFile("resources/tunnelOuter.obj");
 	tunnelOuter->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelOuter->texture.loadFromFile("resources/wall.jpg");
 	scene.objects.push_back(std::move(tunnelOuter));
+
+	std::unique_ptr<Model> tunnelIn{ new Model(Model::Type::Euclidean) };
+	tunnelIn->loadFromFile("resources/tunnelIn.obj");
+	tunnelIn->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelIn->texture.loadFromFile("resources/wall.jpg");
+	scene.objects.push_back(std::move(tunnelIn));
 	/*********************************************************/
 
 	/************************* Tunnel ************************/
@@ -293,14 +382,14 @@ Scene Scene::createRotatingTunnelScene()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l2({ 650, 70,-700, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l2);
-
-	Light l1({ 650, 70, 100, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l1({ 650.0f, 70.0f, 100.0f, 1.0f }, 10000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
 
-	Light sun({ 0, -1, 0, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
-	scene.lights.push_back(sun);
+	Light sun1(glm::normalize(glm::vec4(-1.0f, -1.0f, -1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun1);
+
+	Light sun2(glm::normalize(glm::vec4(1.0f, -1.0f, 1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun2);
 	/*********************************************************/
 
 	return scene;
@@ -316,12 +405,32 @@ Scene Scene::createRotatingTunnelScene2()
 	std::unique_ptr<Model> floor{ new Model(Model::Type::Euclidean) };
 	floor->loadFromFile("resources/tunnelFloor.obj");
 	floor->material.loadFromFile("resources/diffuseMaterial.mtl");
+	floor->texture.loadFromFile("resources/rocks4.jpg");
 	scene.objects.push_back(std::move(floor));
+
+	std::unique_ptr<Model> tunnelFront{ new Model(Model::Type::Euclidean) };
+	tunnelFront->loadFromFile("resources/rotateTunnelFront.obj");
+	tunnelFront->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelFront->texture.loadFromFile("resources/wall.jpg");
+	scene.objects.push_back(std::move(tunnelFront));
+
+	std::unique_ptr<Model> tunnelBack{ new Model(Model::Type::Euclidean) };
+	tunnelBack->loadFromFile("resources/rotateTunnelBack.obj");
+	tunnelBack->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelBack->texture.loadFromFile("resources/wall.jpg");
+	scene.objects.push_back(std::move(tunnelBack));
 
 	std::unique_ptr<Model> tunnelOuter{ new Model(Model::Type::Euclidean) };
 	tunnelOuter->loadFromFile("resources/rotateTunnelOuter.obj");
 	tunnelOuter->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelOuter->texture.loadFromFile("resources/wall.jpg");
 	scene.objects.push_back(std::move(tunnelOuter));
+
+	std::unique_ptr<Model> tunnelIn{ new Model(Model::Type::Euclidean) };
+	tunnelIn->loadFromFile("resources/rotateTunnelIn.obj");
+	tunnelIn->material.loadFromFile("resources/phongMaterial.mtl");
+	tunnelIn->texture.loadFromFile("resources/wall.jpg");
+	scene.objects.push_back(std::move(tunnelIn));
 	/*********************************************************/
 
 	/************************* Tunnel ************************/
@@ -335,14 +444,14 @@ Scene Scene::createRotatingTunnelScene2()
 	/*********************************************************/
 
 	/************************* Lights ************************/
-	Light l2({ 650, 70,-700, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
-	scene.lights.push_back(l2);
-
-	Light l1({ 650, 70, 100, 1.0f }, 25000, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
+	Light l1({ 650.0f, 70.0f, 100.0f, 1.0f }, 10000.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Point);
 	scene.lights.push_back(l1);
 
-	Light sun({ 0, -1, 0, 0.0f }, 50, { 1.0f, 1.0f, 0.0f }, Light::Type::Distant);
-	scene.lights.push_back(sun);
+	Light sun1(glm::normalize(glm::vec4(-1.0f, -1.0f, -1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun1);
+
+	Light sun2(glm::normalize(glm::vec4(1.0f, -1.0f, 1.0f, 0.0f)), 200.0f, { 1.0f, 1.0f, 1.0f }, Light::Type::Distant);
+	scene.lights.push_back(sun2);
 	/*********************************************************/
 
 	return scene;
