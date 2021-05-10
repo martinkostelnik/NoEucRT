@@ -1,7 +1,7 @@
 /**
  * @file Scene.cpp
  * @author Martin Kostelník (xkoste12@stud.fit.vutbr.cz)
- * @brief Implementation file of the Scene class.
+ * @brief Implementation file of the Scene class. All the textures used in the demo scenes are from https://cc0textures.com/.
  * @version 1.0
  * @date 2021-05-12
  * 
