@@ -21,13 +21,16 @@ glm::vec3 LambertianShader::getColor(const Ray& ray, const Scene& scene, const g
 {
     glm::vec3 hitColor(0.0f);
 
+    // Calculate edge functions
     const glm::vec3 edge1 = { hitTriangle.v2.x - hitTriangle.v1.x, hitTriangle.v2.y - hitTriangle.v1.y, hitTriangle.v2.z - hitTriangle.v1.z };
     const glm::vec3 edge2 = { hitTriangle.v3.x - hitTriangle.v1.x, hitTriangle.v3.y - hitTriangle.v1.y, hitTriangle.v3.z - hitTriangle.v1.z };
 
+    // Calculate hit normal
     const glm::vec4 hitNormal = { glm::normalize(glm::cross(edge1, edge2)), 0.0f };
 
     glm::vec3 albedoColor(0.0f);
 
+    // Texture mapping
     if (!hitModel.textureCoordinateMapping.empty() && hitModel.texture.getSize().x != 0)
     {
         const glm::vec2 textureCoordinates = (*hitModel.textureCoordinateMapping.at(&hitTriangle.v1)) * (1 - u - v)

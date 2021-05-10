@@ -34,11 +34,13 @@ NoEucEngine::NoEucEngine() :
 	texture.create(width, height);
 	renderedImage.setTexture(texture);
 
+	// Handle fps UI
 	font.loadFromFile("resources/opensans.ttf");
 	fpsText.setFont(font);
 	fpsText.setCharacterSize(18);
 	fpsText.setFillColor(sf::Color::Red);
 
+	// Handle scene name UI
 	sceneName.setFont(font);
 	sceneName.setCharacterSize(18);
 	sceneName.setPosition(0.0f, 20.0f);
@@ -48,6 +50,7 @@ NoEucEngine::NoEucEngine() :
 	window.setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2i(width * 0.5, height * 0.5), window);
 
+	// Handle shader creation
 	shaders.push_back(std::unique_ptr<Shader>(new LambertianShader()));
 	shaders.push_back(std::unique_ptr<Shader>(new PhongShader()));
 	shaderIndex = 0;

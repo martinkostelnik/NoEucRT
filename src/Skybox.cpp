@@ -25,6 +25,9 @@ Skybox::Skybox(const std::string fileName)
     mapping.emplace_back(faceSize * 3, faceSize * 2 - 1); // 5 - back face
 }
 
+/**
+ * @brief Implementation was taken and modified from: https://en.wikipedia.org/wiki/Cube_mapping
+ */
 glm::vec3 Skybox::getColor(const glm::vec4& rayDirection) const
 {
     float absX = fabs(rayDirection.x);

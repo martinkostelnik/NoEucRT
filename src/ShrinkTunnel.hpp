@@ -14,15 +14,39 @@
 
 #include "Model.hpp"
 
+/**
+ * @brief This class represents shrinking tunnels as a non-euclidean objects.
+ * 
+ */
 class ShrinkTunnel : public Model
 {
 public:
 	ShrinkTunnel();
 
+	/**
+	 * @brief Loads a shrinking tunnel from a modified .obj file.
+	 * 
+	 * @param fileName Path to the .obj file.
+	 */
 	void loadFromFile(const std::string fileName);
 
 	glm::vec4 direction;
+
+	/**
+	 * @brief Fraction representing final size after tunnel traversal.
+	 * 
+	 */
 	float finalSize;
+
+	/**
+	 * @brief Tunnel length.
+	 * 
+	 */
 	float length;
+
+	/**
+	 * @brief Y coordinate of tunnel ceiling
+	 * 
+	 */
 	float ceiling;
 };
