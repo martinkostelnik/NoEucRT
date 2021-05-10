@@ -13,6 +13,10 @@
 
 #include <glm/glm.hpp>
 
+/**
+ * @brief This class represents a triangle of an object.
+ * 
+ */
 class Triangle
 {
 public:

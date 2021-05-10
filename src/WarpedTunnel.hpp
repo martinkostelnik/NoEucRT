@@ -14,14 +14,38 @@
 
 #include "Model.hpp"
 
+/**
+ * @brief This class represents warped tunnels as a non-euclidean objects.
+ * 
+ */
 class WarpedTunnel : public Model
 {
 public:
 	WarpedTunnel();
 
+	
+	/**
+	 * @brief Loads a warped tunnel from a modified .obj file.
+	 * 
+	 * @param fileName Path to the .obj file.
+	 */
 	void loadFromFile(const std::string fileName);
 
+	/**
+	 * @brief Direction which the ray is warped towards.
+	 * 
+	 */
 	glm::vec4 warpDirection;
+
+	/**
+	 * @brief Warping intensity.
+	 * 
+	 */
 	float intensity;
+
+	/**
+	 * @brief Indicates wheter the tunnel is compressed or prolonged.
+	 * 
+	 */
 	bool compressed;
 };

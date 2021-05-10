@@ -10,7 +10,6 @@
  */
 
 #include "Ray.hpp"
-#include <iostream>
 
 Ray::Ray() :
     origin(0, 0, 0, 1),
@@ -30,6 +29,9 @@ Ray::Ray(const glm::vec4& origin, const glm::vec4& direction) :
 {
 }
 
+/**
+ * @brief Implementation was taken and modified from BUT FIT GPUEngine: https://github.com/Rendering-FIT/GPUEngine
+ */
 bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance, float* out_u, float* out_v) const
 {
     const float EPSILON = 0.0000001;
@@ -98,6 +100,9 @@ bool Ray::intersectsTriangle(const Triangle& triangle, float& out_distance, floa
     }
 }
 
+/**
+ * @brief Implementation was taken and modified from: https://tavianator.com/2011/ray_box.html
+ */
 bool Ray::intersectsAABB(const AABB& aabb, float* const out_distance) const
 {
     glm::vec3 invDir(1.0f / direction.x, 1.0f / direction.y, 1.0f / direction.z);

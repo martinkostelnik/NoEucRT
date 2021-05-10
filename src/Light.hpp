@@ -13,9 +13,17 @@
 
 #include <glm/glm.hpp>
 
+/**
+ * @brief This class describes the representation of lights inside the scene.
+ * 
+ */
 class Light
 {
 public:
+	/**
+	 * @brief A light can be either distant or represented by a point in space.
+	 * 
+	 */
 	enum class Type
 	{
 		Distant,
@@ -24,8 +32,27 @@ public:
 
 	Light(const glm::vec4 position, const float intensity, const glm::vec3 color, const Type type);
 
+	/**
+	 * @brief Position of a point light or direction of a distant light.
+	 * 
+	 */
 	const glm::vec4 position;
+
+	/**
+	 * @brief Intensity of the light
+	 * 
+	 */
 	const float intensity;
+
+	/**
+	 * @brief Color of the light
+	 * 
+	 */
 	const glm::vec3 color;
+
+	/**
+	 * @brief Type
+	 * 
+	 */
 	const Type type;
 };

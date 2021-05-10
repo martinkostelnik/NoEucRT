@@ -21,6 +21,10 @@
 #include "Light.hpp"
 #include "Skybox.hpp"
 
+/**
+ * @brief This class represents the scene containing all the objects.
+ * 
+ */
 class Scene
 {
 public:
@@ -42,5 +46,9 @@ public:
 	static Scene createRotatingTunnelScene();
 	static Scene createRotatingTunnelScene2();
 
+	/**
+	 * @brief Scene preprocessing. Model transformations, AABB building and primitive assembly.
+	 * 
+	 */
 	void preProcessScene();
 };

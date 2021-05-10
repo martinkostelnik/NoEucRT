@@ -14,11 +14,24 @@
 
 #include <glm/glm.hpp>
 
+/**
+ * @brief This class describes an axis aligned bounding box, which is wrapped around an object.
+ * 
+ */
 class AABB
 {
 public:
 	AABB();
 
+	/**
+	 * @brief The min point of the bounding box.
+	 * 
+	 */
 	glm::vec3 min;
+
+	/**
+	 * @brief The max point of the bounding box.
+	 * 
+	 */
 	glm::vec3 max;
 };

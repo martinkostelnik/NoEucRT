@@ -14,15 +14,39 @@
 
 #include "Model.hpp"
 
+/**
+ * @brief This class represents rotation tunnels as a non-euclidean objects.
+ * 
+ */
 class RotationTunnel : public Model
 {
 public:
 	RotationTunnel();
 
+	/**
+	 * @brief Loads a rotation tunnel from a modified .obj file.
+	 * 
+	 * @param fileName Path to the .obj file.
+	 */
 	void loadFromFile(const std::string fileName);
 
 	glm::vec4 direction;
+
+	/**
+	 * @brief Rotation performed when the whole tunnel is traversed.
+	 * 
+	 */
 	float maxRotation;
+
+	/**
+	 * @brief Axes around which the camera is rotated.
+	 * 
+	 */
 	glm::vec3 axes;
+
+	/**
+	 * @brief Tunnel length.
+	 * 
+	 */
 	float length;
 };

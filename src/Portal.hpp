@@ -16,13 +16,31 @@
 
 #include <glm/glm.hpp>
 
+/**
+ * @brief This class represents portals as a non-euclidean objects.
+ * 
+ */
 class Portal : public Model
 {
 public:
 	Portal();
 
+	/**
+	 * @brief Loads a portal from a modified .obj file.
+	 * 
+	 * @param fileName Path to the .obj file.
+	 */
 	void loadFromFile(const std::string fileName);
 
+	/**
+	 * @brief Portal exit point.
+	 * 
+	 */
 	glm::vec4 exit;
+
+	/**
+	 * @brief Portal geometric center.
+	 * 
+	 */
 	glm::vec4 center;
 };

@@ -15,8 +15,6 @@
 #include "Portal.hpp"
 #include "WarpedTunnel.hpp"
 
-#include<iostream>
-
 Renderer::Renderer(const size_t width, const size_t height, const float& fov) : 
 	width(width),
 	height(height),
@@ -219,7 +217,7 @@ void Renderer::render(const Scene& scene, const Shader& shader, sf::Texture& tex
 
 			pixels[position * 4] = color.r; // RED
 			pixels[position * 4 + 1] = color.g; // GREEN
-			pixels[position * 4 + 2] = color.b; // Blue
+			pixels[position * 4 + 2] = color.b; // BLUE
 		}
 	}
 
