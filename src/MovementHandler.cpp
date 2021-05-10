@@ -166,10 +166,11 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 				}
 
 				direction = glm::normalize(warpedDirection);
-				collisionRay.direction = glm::normalize(camera.toWorld * direction);
 
 				// Reapply X axis rotation
 				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(camera.Xrotation), { 1, 0, 0 });
+
+				collisionRay.direction = glm::normalize(camera.toWorld * direction);
 			}
 			else if (object->type == Model::Type::ShrinkTunnel) // We are inside shrinking tunnel
 			{
@@ -216,10 +217,11 @@ void MovementHandler::handleCollision(const Scene& scene, Camera& camera, glm::v
 				float rotation = glm::radians(tunnel->maxRotation * rotateFraction);
 
 				camera.toWorld = glm::rotate(camera.toWorld, rotation, tunnel->axes);
-				collisionRay.direction = glm::normalize(camera.toWorld * direction);
 
 				// Reapply X axis rotation
 				camera.toWorld = glm::rotate(camera.toWorld, glm::radians(camera.Xrotation), { 1, 0, 0 });
+
+				collisionRay.direction = glm::normalize(camera.toWorld * direction);
 			}
 		}
 
